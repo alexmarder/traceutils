@@ -1,8 +1,8 @@
 from socket import AF_INET
 
-from cyradix.radix_tree cimport RadixTree
-from cyradix.radix_node cimport RadixNode
-from cyradix.radix_prefix cimport from_packed, from_network, from_address, RadixPrefix
+from traceutils.radix.radix_tree cimport RadixTree
+from traceutils.radix.radix_node cimport RadixNode
+from traceutils.radix.radix_prefix cimport from_packed, from_network, from_address, RadixPrefix
 
 
 def _iter(RadixNode node):

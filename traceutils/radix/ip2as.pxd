@@ -1,4 +1,4 @@
-from cyradix.radix cimport Radix
+from traceutils.radix.radix cimport Radix
 
 cdef class IP2AS(Radix):
     cpdef long asn(self, str asn);

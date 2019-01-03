@@ -1,4 +1,4 @@
-from cscamper.hop cimport Hop
+from traceutils.scamper.hop cimport Hop
 
 cdef class AtlasHop(Hop):
     cdef public str flags

@@ -1,4 +1,4 @@
-from cyradix.radix_prefix cimport RadixPrefix
+from traceutils.radix.radix_prefix cimport RadixPrefix
 
 
 cdef class RadixNode:

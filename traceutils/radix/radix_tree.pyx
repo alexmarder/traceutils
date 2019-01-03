@@ -1,7 +1,7 @@
 cimport cython
 
-from cyradix.radix_node cimport RadixNode
-from cyradix.radix_prefix cimport RadixPrefix
+from traceutils.radix.radix_node cimport RadixNode
+from traceutils.radix.radix_prefix cimport RadixPrefix
 
 
 # @cython.boundscheck(False)

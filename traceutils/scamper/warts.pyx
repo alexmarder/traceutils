@@ -1,8 +1,7 @@
-import sys
 import ujson as json
 from subprocess import Popen, PIPE, TimeoutExpired
 
-from cscamper.hop cimport Hop, Trace, Reader, iptoint
+from traceutils.scamper.hop cimport Hop, Trace, Reader
 
 cdef list create_hops(list hops):
         cdef dict h
@@ -41,11 +40,6 @@ cdef class WartsTrace(Trace):
         self.tos = tos
         self.probe_size = probe_size
         self.probe_count = probe_count
-
-
-# cdef bytes pack(str addr):
-#     if '.' in addr:
-#         return inetp
 
 
 cdef class WartsHop(Hop):
@@ -113,14 +107,3 @@ cdef class WartsReader(Reader):
             self.p.kill()
             self.p.communicate()
         self.p = None
-
-
-def main():
-    # print(iptoint('0.0.0.5'))
-    # print(int.from_bytes(socket.inet_pton(AF_INET, '0.0.0.2'), 'big', signed=False))
-    cdef WartsReader f
-    cdef WartsTrace trace
-    with WartsReader(sys.argv[1]) as f:
-        for trace in f:
-            pass
-    # print(isinstance(trace, Trace))

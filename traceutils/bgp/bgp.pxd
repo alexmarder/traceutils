@@ -1,8 +1,4 @@
-cdef class EmptyDict(dict):
-    pass
-
-cdef class ZeroDict(dict):
-    pass
+from traceutils.utils.dicts cimport EmptyDict, ZeroDict
 
 cpdef enum RelType:
     provider = 1

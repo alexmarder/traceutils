@@ -1,5 +1,4 @@
-cdef class StrDict(dict):
-    pass
+from traceutils.utils.dicts cimport StrDict
 
 cdef class AS2Org:
     cdef StrDict orgs

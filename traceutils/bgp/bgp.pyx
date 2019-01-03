@@ -1,26 +1,6 @@
 from collections import defaultdict
-from file2 cimport File2
-
-
-cdef class EmptyDict(dict):
-    def __missing__(self, key):
-        return set()
-
-
-cdef class ZeroDict(dict):
-
-    def __getstate__(self):
-        return dict(self)
-
-    def __setstate__(self, state):
-        self.update(state)
-
-    def __reduce__(self):
-        return ZeroDict, (), self.__getstate__()
-
-    def __missing__(self, key):
-        return 0
-
+from traceutils.file2.file2 cimport File2
+from traceutils.utils.dicts cimport EmptyDict, ZeroDict
 
 cdef class BGP:
 

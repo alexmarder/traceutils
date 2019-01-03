@@ -1,4 +1,4 @@
-from cscamper.hop import Hop
+from traceutils.scamper.hop import Hop
 
 
 class AtlasErrorException(Exception):

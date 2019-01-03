@@ -1,4 +1,4 @@
-from cscamper.hop cimport Hop, Trace, Reader
+from traceutils.scamper.hop cimport Hop, Trace, Reader
 
 cdef class WartsHop(Hop):
     cdef public int probe_id

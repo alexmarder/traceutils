@@ -5,6 +5,8 @@ from Cython.Build import cythonize
 
 
 extensions_names = {
+    'traceutils.utils.dicts': ['traceutils/utils/dicts.pyx'],
+    'traceutils.file2.file2': ['traceutils/file2/file2.pyx'],
     'traceutils.as2org.as2org': ['traceutils/as2org/as2org.pyx'],
     'traceutils.bgp.bgp': ['traceutils/bgp/bgp.pyx'],
     'traceutils.bgpreader.reader': ['traceutils/bgpreader/reader.pyx'],
@@ -14,8 +16,7 @@ extensions_names = {
     'traceutils.radix.radix': ['traceutils/radix/radix.pyx'],
     'traceutils.radix.ip2as': ['traceutils/radix/ip2as.pyx'],
     'traceutils.scamper.hop': ['traceutils/scamper/hop.pyx'],
-    'traceutils.scamper.warts': ['traceutils/scamper/warts.pyx'],
-    # 'ixps.ixps': ['ixps/ixps.py']
+    'traceutils.scamper.warts': ['traceutils/scamper/warts.pyx']
 }
 
 extensions = [Extension(k, v) for k, v in extensions_names.items()]

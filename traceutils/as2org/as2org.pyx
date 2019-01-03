@@ -1,10 +1,5 @@
-from file2 cimport File2
-
-
-cdef class StrDict(dict):
-    def __missing__(self, int key):
-        return str(key)
-
+from traceutils.file2.file2 cimport File2
+from traceutils.utils.dicts cimport StrDict
 
 cdef class AS2Org:
 

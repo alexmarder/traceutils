@@ -1,7 +1,6 @@
-from file2 cimport File2
-
-from cyradix.radix cimport Radix
-from cyradix.radix_node cimport RadixNode
+from traceutils.file2.file2 cimport File2
+from traceutils.radix.radix cimport Radix
+from traceutils.radix.radix_node cimport RadixNode
 from libc.stdlib cimport atol
 
 cdef class IP2AS(Radix):
