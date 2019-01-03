@@ -1,0 +1,55 @@
+from file2 cimport File2
+
+
+cdef class StrDict(dict):
+    def __missing__(self, int key):
+        return str(key)
+
+
+cdef class AS2Org:
+
+    def __init__(self, str filename, str additional=None):
+        self.orgs = StrDict()
+        self.asn_names = StrDict()
+        self.asn_org_names = StrDict()
+        org_names = {}
+        read_org = False
+        read_asn = False
+        with File2(filename) as f:
+            for line in f:
+                line = line.strip()
+                if line == '# format:org_id|changed|org_name|country|source':
+                    read_org = True
+                    read_asn = False
+                elif line == '# format:aut|changed|aut_name|org_id|opaque_id|source':
+                    read_asn = True
+                    read_org = False
+                elif read_org:
+                    org_id, changed, org_name, country, source = line.split('|')
+                    org_names[org_id] = org_name
+                elif read_asn:
+                    aut, changed, aut_name, org_id, opaque_id, source = line.split('|')
+                    asn = int(aut)
+                    self.orgs[asn] = org_id
+                    self.asn_names[asn] = aut_name
+        for asn, org_id in self.orgs.items():
+            self.asn_org_names[asn] = org_names[org_id]
+        if additional:
+            with File2(additional) as f:
+                for line in f:
+                    if line.strip():
+                        if not line.startswith('#'):
+                            splits = list(map(int, line.split()))
+                            asn = splits[0]
+                            for other in splits[1:]:
+                                self.orgs[other] = self.orgs[asn]
+                                self.asn_org_names[other] = self.asn_org_names[asn]
+
+    def __getitem__(self, item):
+        return self.orgs[item]
+
+    cpdef str name(self, int asn):
+        return self.asn_org_names[asn]
+
+    cpdef str asn_name(self, int asn):
+        return self.asn_names[asn]

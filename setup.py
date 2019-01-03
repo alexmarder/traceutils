@@ -1,0 +1,39 @@
+from Cython.Distutils import build_ext
+from setuptools import setup, find_packages
+from setuptools.extension import Extension
+from Cython.Build import cythonize
+
+
+extensions_names = {
+    'traceutils.as2org.as2org': ['traceutils/as2org/as2org.pyx'],
+    'traceutils.bgp.bgp': ['traceutils/bgp/bgp.pyx'],
+    'traceutils.bgpreader.reader': ['traceutils/bgpreader/reader.pyx'],
+    'traceutils.radix.radix_prefix': ['traceutils/radix/radix_prefix.pyx'],
+    'traceutils.radix.radix_node': ['traceutils/radix/radix_node.pyx'],
+    'traceutils.radix.radix_tree': ['traceutils/radix/radix_tree.pyx'],
+    'traceutils.radix.radix': ['traceutils/radix/radix.pyx'],
+    'traceutils.radix.ip2as': ['traceutils/radix/ip2as.pyx'],
+    'traceutils.scamper.hop': ['traceutils/scamper/hop.pyx'],
+    'traceutils.scamper.warts': ['traceutils/scamper/warts.pyx'],
+    # 'ixps.ixps': ['ixps/ixps.py']
+}
+
+extensions = [Extension(k, v) for k, v in extensions_names.items()]
+package_data = {k: ['*.pxd'] for k in extensions_names}
+
+setup(
+    name="traceutils",
+    version='0.0.1',
+    packages=find_packages(),
+    cmdclass={'build_ext': build_ext},
+    ext_modules=cythonize(
+        extensions,
+        compiler_directives={
+            'language_level': '3',
+        },
+        annotate=True
+    ),
+    zip_safe=False,
+    package_data=package_data,
+    include_package_data=True
+)
