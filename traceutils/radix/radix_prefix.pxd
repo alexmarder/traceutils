@@ -7,7 +7,7 @@ cdef class RadixPrefix:
     cdef readonly unsigned char bitlen
     cdef readonly unsigned char family
 
-    cpdef str addr(self);
+    cpdef str network(self);
 
 cdef bytes fix4(bytes a, unsigned char masklen);
 cdef bytes fix6(bytes a, unsigned char masklen);

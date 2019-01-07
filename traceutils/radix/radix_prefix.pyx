@@ -7,6 +7,9 @@ from libc.stdlib cimport atoi
 cdef class RadixPrefix:
 
     def __repr__(self):
+        return self.network()
+
+    cpdef str network(self):
         cdef addr = inet_ntop(self.family, self.addr)
         return '{}/{}'.format(addr, self.bitlen)
 
@@ -47,7 +50,6 @@ cdef bytes inet_fix(unsigned char family, bytes a, unsigned char masklen):
     if family == AF_INET:
         return fix4(a, masklen)
     return fix6(a, masklen)
-    
 
 
 cdef unsigned char find_family(bytes network):

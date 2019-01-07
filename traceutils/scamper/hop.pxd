@@ -10,7 +10,9 @@ cdef class Hop:
     cdef public unsigned char icmp_q_ttl
     cdef public int icmp_q_tos
     cdef public list icmpext
-    cdef public unsigned long num
+    cdef public bytes packed
+
+    cpdef bytes set_packed(self);
 
 
 cdef class Trace:
@@ -29,4 +31,4 @@ cdef class Reader:
     cpdef void open(self) except *;
     cpdef void close(self) except *;
 
-cpdef unsigned long iptoint(str addr) except -1;
+# cpdef unsigned long iptoint(str addr) except -1;

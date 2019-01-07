@@ -5,6 +5,8 @@ from Cython.Build import cythonize
 
 
 extensions_names = {
+    'traceutils.utils.utils': ['traceutils/utils/utils.pyx'],
+    'traceutils.utils.net': ['traceutils/utils/net.pyx'],
     'traceutils.utils.dicts': ['traceutils/utils/dicts.pyx'],
     'traceutils.file2.file2': ['traceutils/file2/file2.pyx'],
     'traceutils.as2org.as2org': ['traceutils/as2org/as2org.pyx'],

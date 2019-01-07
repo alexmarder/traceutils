@@ -148,7 +148,7 @@ cdef class RadixTree:
 
         if node.right and node.left:
             node.prefix.addr = None
-            node.data = None
+            node.asn = 0
             node.bitlen = 0
             return
         if node.right is None and node.left is None:

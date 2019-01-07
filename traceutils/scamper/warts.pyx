@@ -17,7 +17,7 @@ cdef class WartsTrace(Trace):
             int icmp_sum=-1, str stop_reason='', int stop_data=-1, dict start=None, int hop_count=-1,
             int attempts=-1, unsigned char hoplimit=0, unsigned char firsthop=1, double wait=-1,
             int wait_probe=-1, int tos=-1, unsigned short probe_size=0, unsigned char probe_count=0,
-            list hops=None
+            list hops=None, str list_name='', int id=-1, str hostname='', long start_time=0
     ):
         self.src = src
         self.dst = dst
@@ -88,7 +88,8 @@ cdef class WartsReader(Reader):
         cdef dict j
         for line in self.p.stdout:
             j = json.loads(line)
-            yield WartsTrace(**j)
+            if j['type'] == 'trace':
+                yield WartsTrace(**j)
 
     cpdef void open(self) except *:
         cdef str cmd
@@ -101,9 +102,6 @@ cdef class WartsReader(Reader):
         self.p = Popen(cmd.format(self.filename), stdout=PIPE, shell=True, universal_newlines=True)
 
     cpdef void close(self) except *:
-        try:
-            self.p.communicate(1)
-        except TimeoutExpired:
-            self.p.kill()
-            self.p.communicate()
+        self.p.stdout.close()
+        self.p.wait()
         self.p = None

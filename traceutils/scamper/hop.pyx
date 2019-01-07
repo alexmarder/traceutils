@@ -1,10 +1,19 @@
-from socket import inet_pton, AF_INET, AF_INET6
+from traceutils.utils.net cimport inet_pton_auto_str
 
 cdef class Hop:
-    pass
+
+    def __repr__(self):
+        return '{ttl:02d}: {addr}'.format(addr=self.addr, ttl=self.probe_ttl)
+
+    cpdef bytes set_packed(self):
+        self.packed = inet_pton_auto_str(self.addr)
+        return self.packed
 
 
 cdef class Trace:
+
+    def __repr__(self):
+        return '\n'.join(repr(hop) for hop in self.hops)
 
     cpdef list addrs(self):
         cdef Hop h
@@ -33,7 +42,7 @@ cdef class Trace:
             else:
                 seen.add(addr)
         if end < len(self.hops):
-            self.hops = self.hops[:end+1]
+            self.hops = self.hops[:end+1]        
 
 
 cdef class Reader:
@@ -42,14 +51,3 @@ cdef class Reader:
 
     cpdef void close(self) except *:
         raise NotImplementedError()
-
-
-cpdef unsigned long iptoint(str addr) except -1:
-    cdef int family
-    cdef bytes packed
-    if ':' in addr:
-        family = AF_INET6
-    else:
-        family = AF_INET
-    packed = inet_pton(family, addr)
-    return int.from_bytes(packed, 'big', signed=False)

@@ -22,7 +22,7 @@ cdef class RadixNode:
 
     @property
     def network(self):
-        return self.prefix.network
+        return self.prefix.network()
 
     @property
     def prefixlen(self):
