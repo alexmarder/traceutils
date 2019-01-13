@@ -9,7 +9,6 @@ cdef class Hop:
     cdef public unsigned char icmp_code
     cdef public unsigned char icmp_q_ttl
     cdef public int icmp_q_tos
-    cdef public list icmpext
     cdef public bytes packed
 
     cpdef bytes set_packed(self);
@@ -23,6 +22,7 @@ cdef class Trace:
     cpdef list addrs(self);
     cpdef void prune_dups(self) except *;
     cpdef void prune_loops(self) except *;
+    cpdef void set_packed(self) except *;
 
 cdef class Reader:
     cdef public str filename

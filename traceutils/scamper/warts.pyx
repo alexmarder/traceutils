@@ -1,5 +1,5 @@
 import ujson as json
-from subprocess import Popen, PIPE, TimeoutExpired
+from subprocess import Popen, PIPE
 
 from traceutils.scamper.hop cimport Hop, Trace, Reader
 
@@ -75,14 +75,6 @@ cdef class WartsReader(Reader):
         self.filename = filename
         self.p = None
 
-    def __enter__(self):
-        self.open()
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.close()
-        return False
-
     def __iter__(self):
         cdef str line
         cdef dict j
@@ -94,9 +86,9 @@ cdef class WartsReader(Reader):
     cpdef void open(self) except *:
         cdef str cmd
         if self.filename.endswith('.bz2') or self.filename.endswith('.bzip2'):
-            cmd = 'bzip2 -d -c {} | sc_warts2json'
+            cmd = 'lbzip2 -d -c {} | sc_warts2json'
         elif self.filename.endswith('.gz'):
-            cmd = 'gzip -d -c {} | sc_warts2json'
+            cmd = 'pigz -d -c {} | sc_warts2json'
         else:
             cmd = 'sc_warts2json {}'
         self.p = Popen(cmd.format(self.filename), stdout=PIPE, shell=True, universal_newlines=True)

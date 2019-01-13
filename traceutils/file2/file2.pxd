@@ -5,5 +5,6 @@ cdef class File2:
     cdef str mode
     cdef f
 
+    cpdef readline(self);
     cpdef open(self);
     cpdef void close(self) except *;

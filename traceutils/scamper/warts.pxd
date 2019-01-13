@@ -1,6 +1,7 @@
 from traceutils.scamper.hop cimport Hop, Trace, Reader
 
 cdef class WartsHop(Hop):
+    cdef public list icmpext
     cdef public int probe_id
     cdef public unsigned short probe_size
     cdef public int reply_ipid

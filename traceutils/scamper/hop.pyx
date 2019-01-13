@@ -42,10 +42,24 @@ cdef class Trace:
             else:
                 seen.add(addr)
         if end < len(self.hops):
-            self.hops = self.hops[:end+1]        
+            self.hops = self.hops[:end+1]   
+
+
+    cpdef void set_packed(self) except *:
+        for hop in self.hops:
+            hop.set_packed()
 
 
 cdef class Reader:
+
+    def __enter__(self):
+        self.open()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.close()
+        return False
+
     cpdef void open(self) except *:
         raise NotImplementedError()
 

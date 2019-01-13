@@ -14,4 +14,8 @@ cdef class BGP:
     cdef readonly EmptyDict cone
     cdef readonly ZeroDict conesize
 
+    cpdef bint customer_rel(self, int x, int y) except *;
+    cpdef bint peer_rel(self, int x, int y) except *;
+    cpdef bint provider_rel(self, int x, int y) except *;
+    cpdef bint rel(self, int x, int y) except *;
     cpdef RelType reltype(self, int x, int y);

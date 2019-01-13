@@ -36,6 +36,18 @@ cdef class BGP:
         self.providers = EmptyDict(_providers)
         self.peers = EmptyDict(_peers)
 
+    cpdef bint customer_rel(self, int x, int y) except *:
+        return x in self.customers[y]
+
+    cpdef bint peer_rel(self, int x, int y) except *:
+        return y in self.peers[x]
+
+    cpdef bint provider_rel(self, int x, int y) except *:
+        return x in self.providers[y]
+
+    cpdef bint rel(self, int x, int y) except *:
+        return (x, y) in self.rels
+
     cpdef RelType reltype(self, int x, int y):
         if y in self.customers[x]:
             return RelType.provider

@@ -16,15 +16,21 @@ cdef class File2:
         self.f = None
 
     def __enter__(self):
-        return self.open()
+        self.open()
+        return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
         return False
 
+    def __iter__(self):
+        yield from self.f
+
+    cpdef readline(self):
+        return self.f.readline()
+
     cpdef open(self):
         self.f = infer_compression(self.filename, self.mode)
-        return self.f
 
     cpdef void close(self) except *:
         self.f.close()

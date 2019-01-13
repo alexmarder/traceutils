@@ -18,6 +18,7 @@ extensions_names = {
     'traceutils.radix.radix': ['traceutils/radix/radix.pyx'],
     'traceutils.radix.ip2as': ['traceutils/radix/ip2as.pyx'],
     'traceutils.scamper.hop': ['traceutils/scamper/hop.pyx'],
+    'traceutils.scamper.atlas': ['traceutils/scamper/atlas.pyx'],
     'traceutils.scamper.warts': ['traceutils/scamper/warts.pyx']
 }
 
@@ -28,11 +29,13 @@ setup(
     name="traceutils",
     version='0.0.1',
     packages=find_packages(),
+    install_requires=['ujson', 'cython'],
     cmdclass={'build_ext': build_ext},
     ext_modules=cythonize(
         extensions,
         compiler_directives={
             'language_level': '3',
+            'embedsignature': True
         },
         annotate=True
     ),
