@@ -37,7 +37,7 @@ cdef bytes inet_pton_auto_str(str s):
     return inet_pton_auto(a)
 
 
-cdef unsigned char find_family(bytes addr):
+cpdef unsigned char find_family(bytes addr):
     if strchr(addr, b':'):
         return AF_INET6
     return AF_INET
@@ -122,3 +122,53 @@ cpdef list prefix_addrs(str addr, int size):
     if family == AF_INET:
         return prefix_addrs4(addr_b, size)
     return prefix_addrs6(addr_b, size)
+
+
+cdef bytes otherside4(bytes addr, int num):
+    cdef unsigned char c[4]
+    inet_pton(AF_INET, addr, c)
+    if num == 2:
+        if c[3] % 2 == 0:
+            c[3] += 1
+        else:
+            c[3] -= 1
+    elif num == 4:
+        if c[3] % 4 == 1:
+            c[3] += 1
+        elif c[3] % 4 == 2:
+            c[3] -= 1
+        else:
+            raise Exception('Invalid host address {} for /30 prefix'.format(addr.decode()))
+    else:
+        raise Exception('Invalid number of addresses in prefix {}'.format(num))
+    return <bytes>c[:4]
+
+
+cdef bytes otherside6(bytes addr, int num):
+    cdef unsigned char c[16]
+    inet_pton(AF_INET6, addr, c)
+    if num == 2:
+        if c[15] % 2 == 0:
+            c[15] += 1
+        else:
+            c[15] -= 1
+    elif num == 4:
+        if c[15] % 4 == 1:
+            c[15] += 1
+        elif c[15] % 4 == 2:
+            c[15] -= 1
+        else:
+            raise Exception('Invalid host address {} for /126 prefix'.format(addr.decode()))
+    else:
+        raise Exception('Invalid number of addresses in prefix {}'.format(num))
+    return <bytes>c[:4]
+
+
+cpdef str otherside(str addr, int num):
+    cdef bytes addr_b = addr.encode(), result
+    cdef unsigned char family = find_family(addr_b)
+    if family == AF_INET:
+        result = otherside4(addr_b, num)
+    else:
+        result = otherside6(addr_b, num)
+    return result.decode()
