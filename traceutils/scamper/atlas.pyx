@@ -60,6 +60,7 @@ cdef class AtlasHop(Hop):
         self.icmp_type = icmp_type
         self.icmp_code = icmp_code
         self.icmpext = icmpext
+        self.ismpls = bool(icmpext)
         self.reply_tos = itos
         self.icmp_q_ttl = ittl
 

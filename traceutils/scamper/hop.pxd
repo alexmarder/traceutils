@@ -10,6 +10,7 @@ cdef class Hop:
     cdef public unsigned char icmp_q_ttl
     cdef public int icmp_q_tos
     cdef public bytes packed
+    cdef public bint ismpls
 
     cpdef bytes set_packed(self);
 

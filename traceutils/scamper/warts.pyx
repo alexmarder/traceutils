@@ -61,6 +61,10 @@ cdef class WartsHop(Hop):
         self.icmp_q_ttl = icmp_q_ttl
         self.icmp_q_tos = icmp_q_tos
         self.icmpext = icmpext
+        if icmpext:
+            self.ismpls = 'mpls_labels' in icmpext[0]
+        else:
+            self.ismpls = False
         # self.num = iptoint(addr)
 
         self.probe_id = probe_id

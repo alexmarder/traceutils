@@ -1,12 +1,16 @@
 from traceutils.file2.file2 cimport File2
-from traceutils.utils.dicts cimport StrDict
+from traceutils.utils.dicts cimport StrDict, EmptyDict
 
 cdef class AS2Org:
 
     def __init__(self, str filename, str additional=None):
+        cdef dict org_names, siblings
+        cdef set v
+
         self.orgs = StrDict()
         self.asn_names = StrDict()
         self.asn_org_names = StrDict()
+        self.siblings = EmptyDict()
         org_names = {}
         read_org = False
         read_asn = False
@@ -39,6 +43,14 @@ cdef class AS2Org:
                             for other in splits[1:]:
                                 self.orgs[other] = self.orgs[asn]
                                 self.asn_org_names[other] = self.asn_org_names[asn]
+        siblings = {}
+        for k in set(self.orgs.values()):
+            siblings[k] = set()
+        for asn, org_id in self.orgs.items():
+            siblings[org_id].add(asn)
+        for v in siblings.values():
+            for asn in v:
+                self.siblings[asn] = v
 
     def __getitem__(self, item):
         return self.orgs[item]
