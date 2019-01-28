@@ -19,7 +19,8 @@ extensions_names = {
     'traceutils.radix.ip2as': ['traceutils/radix/ip2as.pyx'],
     'traceutils.scamper.hop': ['traceutils/scamper/hop.pyx'],
     'traceutils.scamper.atlas': ['traceutils/scamper/atlas.pyx'],
-    'traceutils.scamper.warts': ['traceutils/scamper/warts.pyx']
+    'traceutils.scamper.warts': ['traceutils/scamper/warts.pyx'],
+    'traceutils.progress.bar': ['traceutils/progress/bar.py']
 }
 
 extensions = [Extension(k, v) for k, v in extensions_names.items()]
