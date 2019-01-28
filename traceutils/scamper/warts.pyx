@@ -74,6 +74,58 @@ cdef class WartsHop(Hop):
         self.icmp_nhmtu = icmp_nhmtu
 
 
+cdef class WartsPing:
+    def __init__(self, str type='ping', str version=None, str method=None, str src=None, str dst=None, dict start=None, int ping_sent=-1, int probe_size=-1, int userid=-1, int ttl=-1, double wait=-1, double timeout=-1, list responses=None, dict statistics=None):
+        self.type = type
+        self.version = version
+        self.method = method
+        self.src = src
+        self.dst = dst
+        self.start = start
+        self.ping_sent = ping_sent
+        self.probe_size = probe_size
+        self.userid = userid
+        self.ttl = ttl
+        self.wait = wait
+        self.timeout = timeout
+        self.responses = create_responses(responses)
+        self.statistics = statistics
+
+    def __repr__(self):
+        result = ['Src={src}, Dst={dst}:']
+        for resp in self.responses:
+            result.append('\t{}'.format(repr(resp)))
+        result.append(repr(self.statistics))
+        return '\n'.join(result)
+
+
+cdef list create_responses(list responses):
+    cdef dict resp
+    resps = []
+    for resp in responses:
+        resp.pop('from', None)
+        resps.append(WartsPingResponse(**resp))
+    return resps
+
+
+cdef class WartsPingResponse:
+    def __init__(self, int seq=-1, int reply_size=-1, int reply_ttl=-1, str reply_proto=None, dict tx=None, dict rx=None, double rtt=-1, int probe_ipid=-1, int reply_ipid=-1, int icmp_type=-1, int icmp_code=-1):
+        self.seq = seq
+        self.reply_size = reply_size
+        self.reply_ttl = reply_ttl
+        self.reply_proto = reply_proto
+        self.tx = tx
+        self.rx = rx
+        self.rtt = rtt
+        self.probe_ipid = probe_ipid
+        self.reply_ipid = reply_ipid
+        self.icmp_type = icmp_type
+        self.icmp_code = icmp_code
+
+    def __repr__(self):
+        return 'RTT={rtt}'.format(rtt=self.rtt)
+
+
 cdef class WartsReader(Reader):
     def __init__(self, str filename):
         self.filename = filename

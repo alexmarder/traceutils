@@ -28,6 +28,21 @@ cdef class WartsTrace(Trace):
     cdef public unsigned char probe_size
     cdef public unsigned char probe_count
 
+cdef class WartsPing:
+    cdef public str type, version, method, src, dst
+    cdef public dict start, statistics
+    cdef public int ping_sent, probe_size, userid, ttl
+    cdef public double wait, timeout
+    cdef public list responses
+
+cdef list create_responses(list responses);
+
+cdef class WartsPingResponse:
+    cdef public int seq, reply_size, reply_ttl, probe_ipid, reply_ipid, icmp_type, icmp_code
+    cdef public str reply_proto
+    cdef public dict tx, rx
+    cdef public double rtt
+
 cdef class WartsReader(Reader):
     cpdef void open(self) except *;
     cpdef void close(self) except *;
