@@ -45,9 +45,9 @@ class Progress:
 
     def show(self):
         if self.total:
-            sys.stderr.write('\r\033[K{:s} {:.2%} ({:,d} / {:,d}). {:s}'.format(self.message, self.current / self.total, self.current, self.total, self.callback()))
+            sys.stderr.write('\r\033[2K{:s} {:.2%} ({:,d} / {:,d}). {:s}'.format(self.message, self.current / self.total, self.current, self.total, self.callback()))
         else:
-            sys.stderr.write('\r\033[K{:s} {:,d}. {:s}'.format(self.message, self.current, self.callback()))
+            sys.stderr.write('\r\033[2K{:s} {:,d}. {:s}'.format(self.message, self.current, self.callback()))
 
     @staticmethod
     def set_output(b):

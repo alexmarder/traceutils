@@ -142,9 +142,9 @@ cdef class WartsReader(Reader):
     cpdef void open(self) except *:
         cdef str cmd
         if self.filename.endswith('.bz2') or self.filename.endswith('.bzip2'):
-            cmd = 'lbzip2 -d -c {} | sc_warts2json'
+            cmd = 'bzip2 -d -c {} | sc_warts2json'
         elif self.filename.endswith('.gz'):
-            cmd = 'pigz -d -c {} | sc_warts2json'
+            cmd = 'gzip -d -c {} | sc_warts2json'
         else:
             cmd = 'sc_warts2json {}'
         self.p = Popen(cmd.format(self.filename), stdout=PIPE, shell=True, universal_newlines=True)
