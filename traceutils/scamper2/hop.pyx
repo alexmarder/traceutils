@@ -2,18 +2,6 @@ from traceutils.utils.net cimport inet_pton_auto_str
 
 cdef class Hop:
 
-    def __init__(self, str addr, unsigned char probe_ttl, double rtt, unsigned char reply_ttl, int reply_tos, int reply_size, unsigned char icmp_type, unsigned char icmp_code, unsigned char icmp_q_ttl, int icmp_q_tos):
-        self.addr = addr
-        self.probe_ttl = probe_ttl
-        self.rtt = rtt
-        self.reply_ttl = reply_ttl
-        self.reply_tos = reply_tos
-        self.reply_size = reply_size
-        self.icmp_type = icmp_type
-        self.icmp_code = icmp_code
-        self.icmp_q_ttl = icmp_q_ttl
-        self.icmp_q_tos = icmp_q_tos
-
     def __repr__(self):
         return '{ttl:02d}: {addr}'.format(addr=self.addr, ttl=self.probe_ttl)
 
@@ -23,11 +11,6 @@ cdef class Hop:
 
 
 cdef class Trace:
-
-    def __init__(self, str src, str dst, list hops):
-        self.src = src
-        self.dst = dst
-        self.hops = hops
 
     def __repr__(self):
         return '\n'.join(repr(hop) for hop in self.hops)

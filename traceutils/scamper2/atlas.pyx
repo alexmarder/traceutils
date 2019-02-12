@@ -103,18 +103,12 @@ cdef class AtlasReader(Reader):
 
     def __iter__(self):
         cdef str line
-        cdef dict result
+        cdef dict j
         for line in self.f:
             j = json.loads(line)
             # print(j)
-            if isinstance(j, list):
-                for result in j:
-                    if result['type'] == 'traceroute':
-                        yield AtlasTrace(**result)
-            else:
-                result = j
-                if result['type'] == 'traceroute':
-                    yield AtlasTrace(**result)
+            if j['type'] == 'traceroute':
+                yield AtlasTrace(**j)
 
     cpdef void open(self) except *:
         self.f = File2(self.filename)
