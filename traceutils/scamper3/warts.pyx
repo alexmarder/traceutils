@@ -19,10 +19,7 @@ cdef class WartsTrace(Trace):
             int wait_probe=-1, int tos=-1, unsigned short probe_size=0, unsigned char probe_count=0,
             list hops=None, str list_name='', int id=-1, str hostname='', long start_time=0
     ):
-        self.src = src
-        self.dst = dst
-        self.hops = create_hops(hops)
-
+        super().__init__(src, dst, hops)
         self.type = type
         self.version = version
         self.userid = userid
@@ -50,23 +47,12 @@ cdef class WartsHop(Hop):
             int reply_ipid=-1, unsigned char icmp_type=0, unsigned char icmp_code=0, unsigned char icmp_q_ttl=1,
             int icmp_q_ipl=-1, int icmp_q_tos=-1, list icmpext=None, int icmp_nhmtu=-1, **kwargs
     ):
-        self.addr = addr
-        self.probe_ttl = probe_ttl
-        self.rtt = rtt
-        self.reply_ttl = reply_ttl
-        self.reply_tos = reply_tos
-        self.reply_size = reply_size
-        self.icmp_type = icmp_type
-        self.icmp_code = icmp_code
-        self.icmp_q_ttl = icmp_q_ttl
-        self.icmp_q_tos = icmp_q_tos
+        super().__init__(addr, probe_ttl, rtt, reply_ttl, reply_tos, reply_size, icmp_type, icmp_code, icmp_q_ttl, icmp_q_tos)
         self.icmpext = icmpext
         if icmpext:
             self.ismpls = 'mpls_labels' in icmpext[0]
         else:
             self.ismpls = False
-        # self.num = iptoint(addr)
-
         self.probe_id = probe_id
         self.probe_size = probe_size
         self.reply_ipid = reply_ipid
