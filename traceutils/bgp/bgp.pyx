@@ -39,6 +39,21 @@ cdef class BGP:
     cpdef bint customer_rel(self, int x, int y) except *:
         return x in self.customers[y]
 
+    cpdef set multi_customers(self, asns):
+        return {a for asn in asns for a in self.customers[a]}
+
+    cpdef set multi_peers(self, asns):
+        return {a for asn in asns for a in self.peers[a]}
+
+    cpdef set multi_providers(self, asns):
+        return {a for asn in asns for a in self.providers[a]}
+
+    cpdef bint multi_rels(self, asn, others) except *:
+        for other in others:
+            if self.rel(asn, other):
+                return True
+        return False
+
     cpdef bint peer_rel(self, int x, int y) except *:
         return y in self.peers[x]
 

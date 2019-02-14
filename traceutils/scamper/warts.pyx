@@ -1,4 +1,4 @@
-import ujson as json
+import json as json
 from subprocess import Popen, PIPE
 
 from traceutils.scamper.hop cimport Hop, Trace, Reader

@@ -15,6 +15,10 @@ cdef class BGP:
     cdef readonly ZeroDict conesize
 
     cpdef bint customer_rel(self, int x, int y) except *;
+    cpdef set multi_customers(self, asns);
+    cpdef set multi_peers(self, asns);
+    cpdef set multi_providers(self, asns);
+    cpdef bint multi_rels(self, asn, others) except *;
     cpdef bint peer_rel(self, int x, int y) except *;
     cpdef bint provider_rel(self, int x, int y) except *;
     cpdef bint rel(self, int x, int y) except *;
