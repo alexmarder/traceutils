@@ -132,12 +132,15 @@ cdef class WartsReader(Reader):
         self.p = None
 
     def __iter__(self):
-        cdef str line
+        cdef str line, rtype
         cdef dict j
         for line in self.p.stdout:
             j = json.loads(line)
-            if j['type'] == 'trace':
+            rtype = j['type']
+            if rtype == 'trace':
                 yield WartsTrace(**j)
+            elif rtype == 'ping':
+                yield WartsPing(**j)
 
     cpdef void open(self) except *:
         cdef str cmd
