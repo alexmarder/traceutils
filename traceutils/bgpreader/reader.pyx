@@ -7,7 +7,7 @@ from libc.stdlib cimport *
         
 
 cdef bint valid(long asn):
-    return asn != 23456 and 0 < asn < 64496 or 131071 < asn < 4200000000
+    return asn != 23456 and 0 < asn < 64496 or 131071 < asn < 400000
 
 
 cdef char *next_split(char *delimeters, int n):
