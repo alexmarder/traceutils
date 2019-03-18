@@ -3,7 +3,8 @@ This package supports other packages that I write. I ended up using it so often 
 
 # Installation
 ```bash
-git clone https://github.com/alexmarder/traceutils cd traceutils
+git clone https://github.com/alexmarder/traceutils
+cd traceutils
 # install required packages
 pip install -r requirements.txt
 # compile cython code
