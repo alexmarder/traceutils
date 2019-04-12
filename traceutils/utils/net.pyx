@@ -12,7 +12,7 @@ cdef bytes inet_pton4(bytes a):
 @cython.initializedcheck(False)
 cdef bytes inet_pton6(bytes a):
     cdef unsigned char c[16]
-    inet_pton(AF_INET, a, c)
+    inet_pton(AF_INET6, a, c)
     return <bytes>c[:16]
 
 
@@ -89,7 +89,7 @@ cdef list prefix_addrs4(bytes addr, int size):
     cdef unsigned char old, i
     fix4(addr, 32 - size, fixed)
     old = fixed[3]
-    for i in range(size ** 2):
+    for i in range(2 ** size):
         fixed[3] = old + i
         inet_ntop(AF_INET, fixed, dst, INET_ADDRSTRLEN)
         newaddr_b = dst
@@ -126,6 +126,8 @@ cpdef list prefix_addrs(str addr, int size):
 
 cdef bytes otherside4(bytes addr, int num):
     cdef unsigned char c[4]
+    cdef bytes result
+    cdef char dst[46]
     inet_pton(AF_INET, addr, c)
     if num == 2:
         if c[3] % 2 == 0:
@@ -141,11 +143,14 @@ cdef bytes otherside4(bytes addr, int num):
             raise Exception('Invalid host address {} for /30 prefix'.format(addr.decode()))
     else:
         raise Exception('Invalid number of addresses in prefix {}'.format(num))
-    return <bytes>c[:4]
+    inet_ntop(AF_INET, c, dst, INET_ADDRSTRLEN)
+    result = <bytes>dst
+    return result
 
 
 cdef bytes otherside6(bytes addr, int num):
     cdef unsigned char c[16]
+    cdef char dst[46]
     inet_pton(AF_INET6, addr, c)
     if num == 2:
         if c[15] % 2 == 0:
@@ -161,7 +166,8 @@ cdef bytes otherside6(bytes addr, int num):
             raise Exception('Invalid host address {} for /126 prefix'.format(addr.decode()))
     else:
         raise Exception('Invalid number of addresses in prefix {}'.format(num))
-    return <bytes>c[:4]
+    inet_ntop(AF_INET6, c, dst, INET6_ADDRSTRLEN)
+    return <bytes>c
 
 
 cpdef str otherside(str addr, int num):

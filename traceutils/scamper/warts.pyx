@@ -92,7 +92,7 @@ cdef class WartsPing:
         self.statistics = statistics
 
     def __repr__(self):
-        result = ['Src={src}, Dst={dst}:']
+        result = ['Src={src}, Dst={dst}:'.format(src=self.src, dst=self.dst)]
         for resp in self.responses:
             result.append('\t{}'.format(repr(resp)))
         result.append(repr(self.statistics))
