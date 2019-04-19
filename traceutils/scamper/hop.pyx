@@ -28,6 +28,7 @@ cdef class Trace:
         self.src = src
         self.dst = dst
         self.hops = hops
+        self.loop = None
 
     def __repr__(self):
         return '\n'.join(repr(hop) for hop in self.hops)
@@ -37,29 +38,32 @@ cdef class Trace:
         return [h.addr for h in self.hops]
 
     cpdef void prune_dups(self) except *:
-        cdef str prev = None
+        cdef str prev = None, haddr
         cdef list hops = []
         cdef int i
         for i in range(len(self.hops)):
-        # for hop in self.hops:
             hop = self.hops[i]
-            if hop.addr != prev:
+            haddr = hop.addr
+            if haddr != prev:
                 hops.append(hop)
-                prev = hop.addr
+                prev = haddr
         self.hops = hops
 
     cpdef void prune_loops(self) except *:
         cdef set seen = set()
         cdef int end = len(self.hops), i
         cdef str addr
+        prev = None
         for i in range(len(self.hops) - 1, -1, -1):
             addr = self.hops[i].addr
-            if addr in seen:
+            if addr in seen and addr != prev:
                 end = i
             else:
                 seen.add(addr)
+            prev = addr
         if end < len(self.hops):
-            self.hops = self.hops[:end+1]   
+            self.loop = self.hops[end+1:]
+            self.hops = self.hops[:end+1]
 
 
     cpdef void set_packed(self) except *:

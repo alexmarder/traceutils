@@ -19,6 +19,7 @@ cdef class Trace:
     cdef public str src
     cdef public str dst
     cdef public list hops
+    cdef public list loop
 
     cpdef list addrs(self);
     cpdef void prune_dups(self) except *;
