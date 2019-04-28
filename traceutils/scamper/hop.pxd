@@ -1,3 +1,5 @@
+from traceutils.radix.ip2as cimport IP2AS
+
 cdef class Hop:
     cdef public str addr
     cdef public unsigned char probe_ttl
@@ -24,6 +26,7 @@ cdef class Trace:
     cpdef list addrs(self);
     cpdef void prune_dups(self) except *;
     cpdef void prune_loops(self) except *;
+    cpdef void prune_private(self, IP2AS ip2as) except *
     cpdef void set_packed(self) except *;
 
 cdef class Reader:

@@ -1,5 +1,7 @@
 from traceutils.utils.net cimport inet_pton_auto_str
 
+from traceutils.radix.ip2as cimport IP2AS
+
 cdef class Hop:
 
     def __init__(self, str addr, unsigned char probe_ttl, double rtt, unsigned char reply_ttl, int reply_tos, int reply_size, unsigned char icmp_type, unsigned char icmp_code, unsigned char icmp_q_ttl, int icmp_q_tos):
@@ -40,19 +42,23 @@ cdef class Trace:
     cpdef void prune_dups(self) except *:
         cdef str prev = None, haddr
         cdef list hops = []
-        cdef int i
-        for i in range(len(self.hops)):
-            hop = self.hops[i]
+        # cdef int i
+        cdef Hop hop
+        # for i in range(len(self.hops)):
+        #     hop = self.hops[i]
+        for hop in self.hops:
             haddr = hop.addr
             if haddr != prev:
                 hops.append(hop)
                 prev = haddr
+            else:
+                hops[-1] = hop
         self.hops = hops
 
     cpdef void prune_loops(self) except *:
         cdef set seen = set()
         cdef int end = len(self.hops), i
-        cdef str addr
+        cdef str addr, prev
         prev = None
         for i in range(len(self.hops) - 1, -1, -1):
             addr = self.hops[i].addr
@@ -62,9 +68,12 @@ cdef class Trace:
                 seen.add(addr)
             prev = addr
         if end < len(self.hops):
-            self.loop = self.hops[end+1:]
+            self.loop = self.hops[end:]
             self.hops = self.hops[:end+1]
 
+    cpdef void prune_private(self, IP2AS ip2as) except *:
+        cdef Hop h
+        self.hops = [h for h in self.hops if ip2as[h.addr] != -1]
 
     cpdef void set_packed(self) except *:
         for hop in self.hops:

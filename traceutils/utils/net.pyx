@@ -167,7 +167,7 @@ cdef bytes otherside6(bytes addr, int num):
     else:
         raise Exception('Invalid number of addresses in prefix {}'.format(num))
     inet_ntop(AF_INET6, c, dst, INET6_ADDRSTRLEN)
-    return <bytes>c
+    return <bytes>dst
 
 
 cpdef str otherside(str addr, int num):
