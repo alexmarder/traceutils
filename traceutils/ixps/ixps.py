@@ -1,6 +1,8 @@
 import json
 from collections import defaultdict
 
+from traceutils.radix.ip2as import IP2AS
+
 
 class IX:
     def __init__(self, city, country, created, id, media, name, name_long, notes, org_id, policy_email, policy_phone, proto_ipv6, proto_multicast, proto_unicast, region_continent, status, tech_email, tech_phone, updated, url_stats, website):
@@ -96,8 +98,25 @@ class PeeringDB:
         self.netixlans = {netixlan['id']: NetIXLAN(self.ixlans[netixlan['ixlan_id']], **netixlan) for netixlan in j['netixlan']['data']}
         self.prefixes = {ixpfx.prefix: ixpfx.ixlan.ix.id for ixpfx in self.ixpfxs.values()}
         self.addrs = {}
+        self.new_prefixes = {}
+        trie = IP2AS()
+        trie.add_private()
+        for prefix in self.prefixes:
+            trie.add(prefix, asn=1)
         for netixlan in self.netixlans.values():
             if netixlan.ipaddr4:
+                asn = trie[netixlan.ipaddr4]
+                if asn == 0:
+                    prefix = netixlan.ipaddr4.rpartition('.')[0]
+                    ixid = netixlan.ix.id
+                    self.new_prefixes['{}.0/24'.format(prefix)] = ixid
+                    self.prefixes['{}.0/24'.format(prefix)] = ixid
                 self.addrs[netixlan.ipaddr4] = netixlan.asn
             if netixlan.ipaddr6:
+                asn = trie[netixlan.ipaddr6]
+                if asn == 0:
+                    prefix = netixlan.ipaddr6.rpartition(':')[0]
+                    ixid = netixlan.ix.id
+                    self.new_prefixes['{}:0/64'.format(prefix)] = ixid
+                    self.prefixes['{}:0/64'.format(prefix)] = ixid
                 self.addrs[netixlan.ipaddr6] = netixlan.asn

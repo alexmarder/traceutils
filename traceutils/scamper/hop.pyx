@@ -2,9 +2,29 @@ from traceutils.utils.net cimport inet_pton_auto_str
 
 from traceutils.radix.ip2as cimport IP2AS
 
+cpdef ICMPType gettype(int family, int icmp_type) except *:
+    if family == AF_INET:
+        if icmp_type == 0:
+            return ICMPType.echo_reply
+        elif icmp_type == 3:
+            return ICMPType.dest_unreach
+        elif icmp_type == 8:
+            return ICMPType.echo_request
+        elif icmp_type == 11:
+            return ICMPType.time_exceeded
+    else:
+        if icmp_type == 129:
+            return ICMPType.echo_reply
+        elif icmp_type == 1:
+            return ICMPType.dest_unreach
+        elif icmp_type == 128:
+            return ICMPType.echo_request
+        elif icmp_type == 3:
+            return ICMPType.time_exceeded
+
 cdef class Hop:
 
-    def __init__(self, str addr, unsigned char probe_ttl, double rtt, unsigned char reply_ttl, int reply_tos, int reply_size, unsigned char icmp_type, unsigned char icmp_code, unsigned char icmp_q_ttl, int icmp_q_tos):
+    def __init__(self, str addr, unsigned char probe_ttl, double rtt, unsigned char reply_ttl, int reply_tos, int reply_size, unsigned char icmp_type, unsigned char icmp_code, unsigned char icmp_q_ttl, int icmp_q_tos, int family):
         self.addr = addr
         self.probe_ttl = probe_ttl
         self.rtt = rtt
@@ -15,6 +35,7 @@ cdef class Hop:
         self.icmp_code = icmp_code
         self.icmp_q_ttl = icmp_q_ttl
         self.icmp_q_tos = icmp_q_tos
+        self.family = family
 
     def __repr__(self):
         return '{ttl:02d}: {addr}'.format(addr=self.addr, ttl=self.probe_ttl)
@@ -31,6 +52,7 @@ cdef class Trace:
         self.dst = dst
         self.hops = hops
         self.loop = None
+        self.family = 0
 
     def __repr__(self):
         return '\n'.join(repr(hop) for hop in self.hops)

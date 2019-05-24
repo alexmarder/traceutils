@@ -1,4 +1,15 @@
 from traceutils.radix.ip2as cimport IP2AS
+cdef extern from '<arpa/inet.h>':
+    cdef int AF_INET, AF_INET6
+
+cpdef enum ICMPType:
+    echo_reply = 1
+    dest_unreach = 2
+    ptb = 3
+    time_exceeded = 4
+    echo_request = 5
+
+cpdef ICMPType gettype(int family, int icmp_type) except *;
 
 cdef class Hop:
     cdef public str addr
@@ -13,6 +24,8 @@ cdef class Hop:
     cdef public int icmp_q_tos
     cdef public bytes packed
     cdef public bint ismpls
+    cdef public int family
+    cdef public ICMPType type
 
     cpdef bytes set_packed(self);
 
@@ -22,6 +35,7 @@ cdef class Trace:
     cdef public str dst
     cdef public list hops
     cdef public list loop
+    cdef public int family
 
     cpdef list addrs(self);
     cpdef void prune_dups(self) except *;

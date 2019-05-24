@@ -1,12 +1,13 @@
 import json as json
 from subprocess import Popen, PIPE
 
-from traceutils.scamper.hop cimport Hop, Trace, Reader
+from traceutils.scamper.hop cimport Hop, Trace, Reader, gettype
+from traceutils.utils.net cimport find_family
 
-cdef list create_hops(list hops):
+cdef list create_hops(list hops, int family):
         cdef dict h
         if hops is not None:
-            return [WartsHop(**h) for h in hops]
+            return [WartsHop(family=family, **h) for h in hops]
         return []
 
 
@@ -21,7 +22,8 @@ cdef class WartsTrace(Trace):
     ):
         self.src = src
         self.dst = dst
-        self.hops = create_hops(hops)
+        self.family = find_family(dst.encode())
+        self.hops = create_hops(hops, self.family)
 
         self.type = type
         self.version = version
@@ -48,7 +50,7 @@ cdef class WartsHop(Hop):
             self, str addr='', unsigned char probe_ttl=0, int probe_id=-1, unsigned short probe_size=0,
             double rtt=-1, unsigned char reply_ttl=0, int reply_tos=-1, unsigned short reply_size=0,
             int reply_ipid=-1, unsigned char icmp_type=0, unsigned char icmp_code=0, unsigned char icmp_q_ttl=1,
-            int icmp_q_ipl=-1, int icmp_q_tos=-1, list icmpext=None, int icmp_nhmtu=-1, **kwargs
+            int icmp_q_ipl=-1, int icmp_q_tos=-1, list icmpext=None, int icmp_nhmtu=-1, int family=0, **kwargs
     ):
         self.addr = addr
         self.probe_ttl = probe_ttl
@@ -72,6 +74,8 @@ cdef class WartsHop(Hop):
         self.reply_ipid = reply_ipid
         self.icmp_q_ipl = icmp_q_ipl
         self.icmp_nhmtu = icmp_nhmtu
+        self.family = family
+        self.type = gettype(family, icmp_type)
 
 
 cdef class WartsPing:
@@ -81,6 +85,7 @@ cdef class WartsPing:
         self.method = method
         self.src = src
         self.dst = dst
+        self.family = find_family(dst.encode())
         self.start = start
         self.ping_sent = ping_sent
         self.probe_size = probe_size
@@ -88,7 +93,7 @@ cdef class WartsPing:
         self.ttl = ttl
         self.wait = wait
         self.timeout = timeout
-        self.responses = create_responses(responses)
+        self.responses = create_responses(responses, self.family)
         self.statistics = statistics
 
     def __repr__(self):
@@ -99,17 +104,17 @@ cdef class WartsPing:
         return '\n'.join(result)
 
 
-cdef list create_responses(list responses):
+cdef list create_responses(list responses, int family):
     cdef dict resp
     resps = []
     for resp in responses:
         resp.pop('from', None)
-        resps.append(WartsPingResponse(**resp))
+        resps.append(WartsPingResponse(family=family, **resp))
     return resps
 
 
 cdef class WartsPingResponse:
-    def __init__(self, int seq=-1, int reply_size=-1, int reply_ttl=-1, str reply_proto=None, dict tx=None, dict rx=None, double rtt=-1, int probe_ipid=-1, int reply_ipid=-1, int icmp_type=-1, int icmp_code=-1):
+    def __init__(self, int seq=-1, int reply_size=-1, int reply_ttl=-1, str reply_proto=None, dict tx=None, dict rx=None, double rtt=-1, int probe_ipid=-1, int reply_ipid=-1, int icmp_type=-1, int icmp_code=-1, int family=0):
         self.seq = seq
         self.reply_size = reply_size
         self.reply_ttl = reply_ttl
@@ -121,6 +126,8 @@ cdef class WartsPingResponse:
         self.reply_ipid = reply_ipid
         self.icmp_type = icmp_type
         self.icmp_code = icmp_code
+        self.family = family
+        self.type = gettype(family, icmp_type)
 
     def __repr__(self):
         return 'RTT={rtt}'.format(rtt=self.rtt)

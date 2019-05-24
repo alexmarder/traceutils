@@ -1,4 +1,4 @@
-from traceutils.scamper.hop cimport Hop, Trace, Reader
+from traceutils.scamper.hop cimport Hop, Trace, Reader, ICMPType
 
 cdef class WartsHop(Hop):
     cdef public list icmpext
@@ -34,14 +34,17 @@ cdef class WartsPing:
     cdef public int ping_sent, probe_size, userid, ttl
     cdef public double wait, timeout
     cdef public list responses
+    cdef public int family
 
-cdef list create_responses(list responses);
+cdef list create_responses(list responses, int family);
 
 cdef class WartsPingResponse:
     cdef public int seq, reply_size, reply_ttl, probe_ipid, reply_ipid, icmp_type, icmp_code
     cdef public str reply_proto
     cdef public dict tx, rx
     cdef public double rtt
+    cdef public int family
+    cdef public ICMPType type
 
 cdef class WartsReader(Reader):
     cpdef void open(self) except *;

@@ -52,9 +52,9 @@ cdef void fix4(bytes a, unsigned char masklen, unsigned char *c) except *:
     inet_pton(AF_INET, a, c)
     for i in range(quotient+1, 4, 1):
         c[i] = 0
-    if remainder > 0:
-        mask = ((~0) << (8 - remainder))
-        c[quotient] &= mask
+    # if remainder < 8:
+    mask = ((~0) << (8 - remainder))
+    c[quotient] &= mask
 
 
 @cython.cdivision(True)
@@ -66,9 +66,9 @@ cdef void fix6(bytes a, unsigned char masklen, unsigned char *c) except *:
     inet_pton(AF_INET6, a, c)
     for i in range(quotient+1, 16, 1):
         c[i] = 0
-    if remainder > 0:
-        mask = ((~0) << (8 - remainder))
-        c[quotient] &= mask
+    # if remainder > 0:
+    mask = ((~0) << (8 - remainder))
+    c[quotient] &= mask
 
 
 cpdef bytes inet_fix(unsigned char family, bytes a, unsigned char masklen):

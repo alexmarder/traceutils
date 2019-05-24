@@ -24,9 +24,9 @@ cdef bytes fix4(bytes a, unsigned char masklen):
     inet_pton(AF_INET, a, c)
     for i in range(quotient+1, 4, 1):
         c[i] = 0
-    if remainder > 0:
-        mask = ((~0) << (8 - remainder))
-        c[quotient] &= mask
+    # if remainder > 0:
+    mask = ((~0) << (8 - remainder))
+    c[quotient] &= mask
     return <bytes>c[:4]
 
 
@@ -40,9 +40,9 @@ cdef bytes fix6(bytes a, unsigned char masklen):
     inet_pton(AF_INET6, a, c)
     for i in range(quotient+1, 16, 1):
         c[i] = 0
-    if remainder > 0:
-        mask = ((~0) << (8 - remainder))
-        c[quotient] &= mask
+    # if remainder > 0:
+    mask = ((~0) << (8 - remainder))
+    c[quotient] &= mask
     return <bytes>c[:16]
 
 
