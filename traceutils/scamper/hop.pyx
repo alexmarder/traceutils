@@ -2,12 +2,15 @@ from traceutils.utils.net cimport inet_pton_auto_str
 
 from traceutils.radix.ip2as cimport IP2AS
 
-cpdef ICMPType gettype(int family, int icmp_type) except *:
+cpdef ICMPType gettype(int family, int icmp_type, int icmp_code) except *:
     if family == AF_INET:
         if icmp_type == 0:
             return ICMPType.echo_reply
         elif icmp_type == 3:
-            return ICMPType.dest_unreach
+            if icmp_code == 13:
+                return ICMPType.spoofing
+            else:
+                return ICMPType.dest_unreach
         elif icmp_type == 8:
             return ICMPType.echo_request
         elif icmp_type == 11:
@@ -16,7 +19,10 @@ cpdef ICMPType gettype(int family, int icmp_type) except *:
         if icmp_type == 129:
             return ICMPType.echo_reply
         elif icmp_type == 1:
-            return ICMPType.dest_unreach
+            if icmp_code == 5:
+                return ICMPType.spoofing
+            else:
+                return ICMPType.dest_unreach
         elif icmp_type == 128:
             return ICMPType.echo_request
         elif icmp_type == 3:

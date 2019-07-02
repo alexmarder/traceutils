@@ -75,7 +75,7 @@ cdef class WartsHop(Hop):
         self.icmp_q_ipl = icmp_q_ipl
         self.icmp_nhmtu = icmp_nhmtu
         self.family = family
-        self.type = gettype(family, icmp_type)
+        self.type = gettype(family, icmp_type, icmp_code)
 
 
 cdef class WartsPing:
@@ -127,16 +127,18 @@ cdef class WartsPingResponse:
         self.icmp_type = icmp_type
         self.icmp_code = icmp_code
         self.family = family
-        self.type = gettype(family, icmp_type)
+        self.type = gettype(family, icmp_type, icmp_code)
 
     def __repr__(self):
         return 'RTT={rtt}'.format(rtt=self.rtt)
 
 
 cdef class WartsReader(Reader):
-    def __init__(self, str filename):
+    def __init__(self, str filename, bint trace=True, bint ping=True):
         self.filename = filename
         self.p = None
+        self.trace = trace
+        self.ping = ping
 
     def __iter__(self):
         cdef str line, rtype
@@ -145,9 +147,11 @@ cdef class WartsReader(Reader):
             j = json.loads(line)
             rtype = j['type']
             if rtype == 'trace':
-                yield WartsTrace(**j)
+                if self.trace:
+                    yield WartsTrace(**j)
             elif rtype == 'ping':
-                yield WartsPing(**j)
+                if self.ping:
+                    yield WartsPing(**j)
 
     cpdef void open(self) except *:
         cdef str cmd

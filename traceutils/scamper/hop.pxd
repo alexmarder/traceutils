@@ -8,8 +8,9 @@ cpdef enum ICMPType:
     ptb = 3
     time_exceeded = 4
     echo_request = 5
+    spoofing = 6
 
-cpdef ICMPType gettype(int family, int icmp_type) except *;
+cpdef ICMPType gettype(int family, int icmp_type, int icmp_code) except *;
 
 cdef class Hop:
     cdef public str addr

@@ -47,5 +47,8 @@ cdef class WartsPingResponse:
     cdef public ICMPType type
 
 cdef class WartsReader(Reader):
+    cdef bint trace
+    cdef bint ping
+
     cpdef void open(self) except *;
     cpdef void close(self) except *;

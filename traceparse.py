@@ -62,7 +62,7 @@ def candidates(filename: str, ip2as=None, info: Info = None):
             if trace.hops:
                 trace.prune_private(_ip2as)
                 if trace.hops:
-                    # trace.prune_dups()
+                    trace.prune_dups()
                     trace.prune_loops()
                     for i in range(len(trace.hops) - 1):
                         x = trace.hops[i]
@@ -70,7 +70,7 @@ def candidates(filename: str, ip2as=None, info: Info = None):
                         xaddr = x.addr
                         yaddr = y.addr
                         if xaddr != yaddr:
-                            if x.type != ICMPType.echo_reply and y.type != ICMPType.echo_reply:
+                            # if x.type != ICMPType.echo_reply and y.type != ICMPType.echo_reply:
                                 if _tuples:
                                     info.tuples.add((xaddr, yaddr))
                                 if _triplets:
