@@ -28,7 +28,7 @@ package_data = {k: ['*.pxd'] for k in extensions_names}
 
 setup(
     name="traceutils",
-    version='06.15.0',
+    version='6.15.0',
     packages=find_packages(),
     install_requires=['ujson', 'cython'],
     cmdclass={'build_ext': build_ext},
