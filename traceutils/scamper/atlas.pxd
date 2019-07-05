@@ -7,7 +7,7 @@ cdef class AtlasHop(Hop):
     cdef public int late
     cdef public int dup
     cdef public str edst
-    cdef dict hdropts
+    cdef list hdropts
 
 cdef class AtlasTrace(Trace):
     cdef public int af, fw, group_id, lts, msm_id, paris_id, prb_id, size
