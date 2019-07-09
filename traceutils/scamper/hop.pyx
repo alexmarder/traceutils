@@ -87,6 +87,7 @@ cdef class Trace:
         cdef set seen = set()
         cdef int end = len(self.hops), i
         cdef str addr, prev
+        # cdef Hop poss_end1, poss_end2
         prev = None
         for i in range(len(self.hops) - 1, -1, -1):
             addr = self.hops[i].addr
@@ -96,8 +97,14 @@ cdef class Trace:
                 seen.add(addr)
             prev = addr
         if end < len(self.hops):
+            # poss_end1 = self.hops[end]
+            # poss_end2 = self.hops[end+1]
             self.loop = self.hops[end:]
             self.hops = self.hops[:end+1]
+            # if poss_end1.reply_ttl >= poss_end2.reply_ttl:
+            #     self.hops = self.hops[:end+1]
+            # else:
+            #     self.hops = self.hops[:end]
 
     cpdef void prune_private(self, IP2AS ip2as) except *:
         cdef Hop h
