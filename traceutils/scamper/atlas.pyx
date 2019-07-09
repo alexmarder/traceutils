@@ -30,7 +30,7 @@ cdef list create_hops(list hops):
 
 
 cdef class AtlasHop(Hop):
-    def __init__(self, int hop=-1, double rtt=float('nan'), int size=-1, int ttl=-1, err=None, int itos=0, int ittl=1, str flags=None, dict icmpext=None, int late=0, int dup=0, str edst=None, dict hdropts=None, **kwargs):
+    def __init__(self, int hop=-1, double rtt=float('nan'), int size=-1, int ttl=-1, err=None, int itos=0, int ittl=1, str flags=None, dict icmpext=None, int late=0, int dup=0, str edst=None, list hdropts=None, **kwargs):
         cdef int icmp_type, icmp_code
         if err is None:
             icmp_type = 11
