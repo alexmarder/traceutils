@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "IpFrom": {"type": "string"},
+    "dstAddress": {"type": "string"},
+    "dstName": {"type": "string"},
+    "startTime": {"type": "string"},
+    "endTime": {"type": "string"},
+    "lts": {"type": "string"},
+    "af": {"type": "string"},
+    "parisId": {"type": "string"},
+    "msmId": {"type": "string"},
+    "prbId": {"type": "string"},
+    "groupId": {"type": "string"},
+    "hops": {
+      "type": "array",
+      "properties": {
+        "hop": {"type": "string"},
+        "resultHops": {
+          "type": "array",
+          "properties": {
+            "err": {"type": "string"},
+            "rtt": {"type": "number"},
+            "from": {"type": "string"},
+            "fromBytes": {"type": "string"},
+            "edst": {"type": "string"}
+          },
+          "required": ["err", "rtt", "from", "fromBytes", "edst"]
+        }
+      },
+      "required": ["hop", "resultHops"]
+    },
+    "public": {"type": "boolean"},
+    "oneoff": {"type": "boolean"}
+  },
+  "required": ["IpFrom", "dstAddress", "dstName", "startTime", "endTime", "lts", "af", "parisId", "msmId", "prbId", "groupId", "hops", "public", "oneoff"]
+}

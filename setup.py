@@ -20,6 +20,7 @@ extensions_names = {
     'traceutils.scamper.hop': ['traceutils/scamper/hop.pyx'],
     'traceutils.scamper.atlas': ['traceutils/scamper/atlas.pyx'],
     'traceutils.scamper.warts': ['traceutils/scamper/warts.pyx'],
+    'traceutils.scamper.pyatlas': ['scamper/py_atlas.py'],
     'traceutils.progress.bar': ['traceutils/progress/bar.py']
 }
 
