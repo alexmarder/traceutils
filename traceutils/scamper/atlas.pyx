@@ -72,7 +72,7 @@ cdef class AtlasHop(Hop):
 
 
 cdef class AtlasTrace(Trace):
-    def __init__(self, int af=0, str dst_addr='', str dst_name='', long endtime=0, int fw=0, int group_id=0, int lts=0, int msm_id=0, str msm_name='', int paris_id=0, int prb_id=0, str proto='', list result=None, int size=0, str src_addr='', long timestamp=0, str type='', **kwargs):
+    def __init__(self, af=0, str dst_addr='', str dst_name='', long endtime=0, fw=0, group_id=0, lts=0, msm_id=0, str msm_name='', paris_id=0, prb_id=0, str proto='', list result=None, size=0, str src_addr='', timestamp=0, str type='', **kwargs):
         self.src = src_addr
         self.dst = dst_addr
         self.hops = create_hops(result)
