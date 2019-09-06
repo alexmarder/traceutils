@@ -17,17 +17,19 @@ cdef class AS2Org:
         with File2(filename) as f:
             for line in f:
                 line = line.strip()
-                if line == '# format:org_id|changed|org_name|country|source':
+                # if line == '# format:org_id|changed|org_name|country|source':
+                if line.startswith('# format:org_id|changed|org_name|country'):
                     read_org = True
                     read_asn = False
-                elif line == '# format:aut|changed|aut_name|org_id|opaque_id|source':
+                # elif line == '# format:aut|changed|aut_name|org_id|opaque_id|source':
+                elif line.startswith('# format:aut|changed|aut_name|org_id'):
                     read_asn = True
                     read_org = False
                 elif read_org:
-                    org_id, changed, org_name, country, source = line.split('|')
+                    org_id, changed, org_name, country, *extra = line.split('|')
                     org_names[org_id] = org_name
                 elif read_asn:
-                    aut, changed, aut_name, org_id, opaque_id, source = line.split('|')
+                    aut, changed, aut_name, org_id, *extra = line.split('|')
                     asn = int(aut)
                     self.orgs[asn] = org_id
                     self.asn_names[asn] = aut_name

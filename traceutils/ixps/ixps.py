@@ -99,24 +99,39 @@ class PeeringDB:
         self.prefixes = {ixpfx.prefix: ixpfx.ixlan.ix.id for ixpfx in self.ixpfxs.values()}
         self.addrs = {}
         self.new_prefixes = {}
+        self.addr_ixid = {}
+        self.asn_ixid = defaultdict(set)
+        self.ixid_addrasns = defaultdict(set)
         trie = IP2AS()
         trie.add_private()
         for prefix in self.prefixes:
             trie.add(prefix, asn=1)
         for netixlan in self.netixlans.values():
+            ixid = netixlan.ix.id
+            self.asn_ixid[netixlan.asn].add(ixid)
             if netixlan.ipaddr4:
                 asn = trie[netixlan.ipaddr4]
                 if asn == 0:
                     prefix = netixlan.ipaddr4.rpartition('.')[0]
-                    ixid = netixlan.ix.id
                     self.new_prefixes['{}.0/24'.format(prefix)] = ixid
                     self.prefixes['{}.0/24'.format(prefix)] = ixid
                 self.addrs[netixlan.ipaddr4] = netixlan.asn
+                self.addr_ixid[netixlan.ipaddr4] = ixid
+                self.ixid_addrasns[ixid].add((netixlan.ipaddr4, netixlan.asn))
             if netixlan.ipaddr6:
                 asn = trie[netixlan.ipaddr6]
                 if asn == 0:
                     prefix = netixlan.ipaddr6.rpartition(':')[0]
-                    ixid = netixlan.ix.id
                     self.new_prefixes['{}:0/64'.format(prefix)] = ixid
                     self.prefixes['{}:0/64'.format(prefix)] = ixid
                 self.addrs[netixlan.ipaddr6] = netixlan.asn
+                self.addr_ixid[netixlan.ipaddr6] = ixid
+                self.ixid_addrasns[ixid].add((netixlan.ipaddr6, netixlan.asn))
+        self.asn_ixid.default_factory = None
+        self.ixid_addrasns.default_factory = None
+
+    def addr_asns(self, asn):
+        if asn in self.asn_ixid:
+            for ixid in self.asn_ixid[asn]:
+                for addr, asn in self.ixid_addrasns[ixid]:
+                    yield addr, asn
