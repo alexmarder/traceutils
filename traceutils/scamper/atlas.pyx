@@ -109,11 +109,11 @@ cdef class AtlasReader(Reader):
             # print(j)
             if isinstance(j, list):
                 for result in j:
-                    if result['type'] == 'traceroute':
+                    if not 'type' in result or result['type'] == 'traceroute':
                         yield AtlasTrace(**result)
             else:
                 result = j
-                if result['type'] == 'traceroute':
+                if not 'type' in result or result['type'] == 'traceroute':
                     yield AtlasTrace(**result)
 
     cpdef void open(self) except *:
