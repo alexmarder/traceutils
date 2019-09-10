@@ -1,6 +1,9 @@
 from traceutils.file2.file2 cimport File2
 from traceutils.scamper.hop cimport Hop, Trace, Reader
 
+cdef extern from '<arpa/inet.h>':
+    cdef int AF_INET, AF_INET6
+
 cdef class AtlasHop(Hop):
     cdef public dict icmpext
     cdef public str flags

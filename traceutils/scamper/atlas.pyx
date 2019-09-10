@@ -8,7 +8,7 @@ class AtlasErrorException(Exception):
     pass
 
 
-cdef list create_hops(list hops):
+cdef list create_hops(list hops, int family):
     cdef list hopslist = []
     cdef dict h, result
     cdef list results
@@ -23,31 +23,35 @@ cdef list create_hops(list hops):
             # print(h['result'])
             for result in h['result']:
                 if 'from' in result:
-                    hop = AtlasHop(hop=h['hop'], **result)
+                    hop = AtlasHop(hop=h['hop'], family=family, **result)
                     hopslist.append(hop)
                     break
     return hopslist
 
 
 cdef class AtlasHop(Hop):
-    def __init__(self, int hop=-1, double rtt=float('nan'), int size=-1, int ttl=-1, err=None, int itos=0, int ittl=1, str flags=None, dict icmpext=None, int late=0, int dup=0, str edst=None, list hdropts=None, **kwargs):
+    def __init__(self, int hop=-1, double rtt=float('nan'), int size=-1, int ttl=-1, err=None, int itos=0, int ittl=1, str flags=None, dict icmpext=None, int late=0, int dup=0, str edst=None, list hdropts=None, family=0, **kwargs):
         cdef int icmp_type, icmp_code
-        if err is None:
-            icmp_type = 11
-            icmp_code = 0
+        if not err:
+            if family == AF_INET:
+                icmp_type = 11
+                icmp_code = 0
+            else:
+                icmp_type = 3
+                icmp_code = 0
         else:
-            icmp_type = 3
+            icmp_type = 3 if family == AF_INET else 1
             if isinstance(err, str):
                 if err == 'N':
-                    icmp_code = 0
+                    icmp_code = 0 if family == AF_INET else 0
                 elif err == 'H':
-                    icmp_code = 1
+                    icmp_code = 1 if family == AF_INET else 3
                 elif err == 'A':
-                    icmp_code = 13
+                    icmp_code = 13 if family == AF_INET else 5
                 elif err == 'P':
-                    icmp_code = 2
+                    icmp_code = 2 if family == AF_INET else 4
                 elif err == 'p':
-                    icmp_code = 3
+                    icmp_code = 3 if family == AF_INET else 4
             elif isinstance(err, int):
                 icmp_code = err
             else:
@@ -75,7 +79,8 @@ cdef class AtlasTrace(Trace):
     def __init__(self, int af=0, str dst_addr='', str dst_name='', long endtime=0, int fw=0, int group_id=0, int lts=0, int msm_id=0, str msm_name='', int paris_id=0, int prb_id=0, str proto='', list result=None, int size=0, str src_addr='', long timestamp=0, str type='', **kwargs):
         self.src = src_addr
         self.dst = dst_addr
-        self.hops = create_hops(result)
+        self.family = AF_INET if af == 4 else AF_INET6
+        self.hops = create_hops(result, self.family)
 
         self.af = af
         self.dst_addr = dst_addr
