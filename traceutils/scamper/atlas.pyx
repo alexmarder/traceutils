@@ -32,6 +32,10 @@ cdef list create_hops(list hops, int family):
 cdef class AtlasHop(Hop):
     def __init__(self, int hop=-1, double rtt=float('nan'), int size=-1, int ttl=-1, err=None, int itos=0, int ittl=1, str flags=None, dict icmpext=None, int late=0, int dup=0, str edst=None, list hdropts=None, family=0, **kwargs):
         cdef int icmp_type, icmp_code
+        # For now, if I messed up the family, assume IPv4.
+        # Will change later when I get Atlas IPv6 traceroutes to test against
+        if family == 0:
+            family = 4
         if not err:
             if family == AF_INET:
                 icmp_type = 11
