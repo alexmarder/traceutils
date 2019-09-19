@@ -5,7 +5,7 @@ from traceutils.radix.ip2as import IP2AS
 
 
 class IX:
-    def __init__(self, city, country, created, id, media, name, name_long, notes, org_id, policy_email, policy_phone, proto_ipv6, proto_multicast, proto_unicast, region_continent, status, tech_email, tech_phone, updated, url_stats, website):
+    def __init__(self, city, country, created, id, media, name, name_long, notes, org_id, policy_email, policy_phone, proto_ipv6, proto_multicast, proto_unicast, region_continent, status, tech_email, tech_phone, updated, url_stats, website, **kwargs):
         self.city = city
         self.country = country
         self.created = created
@@ -27,6 +27,7 @@ class IX:
         self.updated = updated
         self.url_stats = url_stats
         self.website = website
+        self.kwargs = kwargs
 
     def __repr__(self):
         return '<IX {}>'.format(self.name)
