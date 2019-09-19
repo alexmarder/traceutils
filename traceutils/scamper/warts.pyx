@@ -79,7 +79,7 @@ cdef class WartsHop(Hop):
 
 
 cdef class WartsPing:
-    def __init__(self, str type='ping', str version=None, str method=None, str src=None, str dst=None, dict start=None, int ping_sent=-1, int probe_size=-1, int userid=-1, int ttl=-1, double wait=-1, double timeout=-1, list responses=None, dict statistics=None):
+    def __init__(self, str type='ping', str version=None, str method=None, str src=None, str dst=None, dict start=None, int ping_sent=-1, int probe_size=-1, int userid=-1, int ttl=-1, double wait=-1, int wait_us=-1, double timeout=-1, list responses=None, dict statistics=None):
         self.type = type
         self.version = version
         self.method = method

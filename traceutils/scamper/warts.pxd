@@ -31,7 +31,7 @@ cdef class WartsTrace(Trace):
 cdef class WartsPing:
     cdef public str type, version, method, src, dst
     cdef public dict start, statistics
-    cdef public int ping_sent, probe_size, userid, ttl
+    cdef public int ping_sent, probe_size, userid, ttl, wait_us
     cdef public double wait, timeout
     cdef public list responses
     cdef public int family
