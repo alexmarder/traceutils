@@ -17,7 +17,7 @@ cdef class RadixPrefix:
 @cython.cdivision(True)
 @cython.initializedcheck(False)
 cdef bytes fix4(bytes a, unsigned char masklen):
-    cdef unsigned char c[4]
+    cdef unsigned char c[20]
     cdef unsigned char i, quotient, remainder, mask
     quotient = masklen / 8
     remainder = masklen % 8
@@ -33,8 +33,9 @@ cdef bytes fix4(bytes a, unsigned char masklen):
 @cython.cdivision(True)
 @cython.initializedcheck(False)
 cdef bytes fix6(bytes a, unsigned char masklen):
-    cdef unsigned char c[16]
+    cdef unsigned char c[20]
     cdef unsigned char i, quotient, remainder, mask
+    # print('reached')
     quotient = masklen / 8
     remainder = masklen % 8
     inet_pton(AF_INET6, a, c)
@@ -43,7 +44,10 @@ cdef bytes fix6(bytes a, unsigned char masklen):
     # if remainder > 0:
     mask = ((~0) << (8 - remainder))
     c[quotient] &= mask
-    return <bytes>c[:16]
+    # print(test)
+    # test = <bytes>c[:16]
+    return bytes(<bytes>c[:16])
+    # return bytes(test)
 
 
 cdef bytes inet_fix(unsigned char family, bytes a, unsigned char masklen):
@@ -80,9 +84,11 @@ cdef RadixPrefix from_network(str s, char masklen=-1):
     cdef bytes a = s.encode()
     cdef bytes net, mask
     net, mask = partition(a)
+    # print(net, mask)
     # net, _, mask = a.partition(b'/')
     # cdef Network net = partition(a)
     family = find_family(net)
+    # print(family)
     if mask:
         if masklen >= 0:
             raise ValueError('masklen is set twice')
@@ -93,6 +99,8 @@ cdef RadixPrefix from_network(str s, char masklen=-1):
         else:
             masklen = 128
     cdef bytes addr = inet_fix(family, net, masklen)
+    # if family == AF_INET6:
+    #     print(addr, len(addr))
     cdef RadixPrefix prefix = RadixPrefix()
     prefix.addr = addr
     prefix.bitlen = masklen

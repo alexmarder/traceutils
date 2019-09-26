@@ -105,8 +105,10 @@ class PeeringDB:
         self.ixid_addrasns = defaultdict(set)
         trie = IP2AS()
         trie.add_private()
+        print('added private')
         for prefix in self.prefixes:
             trie.add(prefix, asn=1)
+        print('added prefixes')
         for netixlan in self.netixlans.values():
             ixid = netixlan.ix.id
             self.asn_ixid[netixlan.asn].add(ixid)
