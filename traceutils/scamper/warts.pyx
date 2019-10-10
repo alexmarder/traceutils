@@ -153,6 +153,11 @@ cdef class WartsReader(Reader):
                 if self.ping:
                     yield WartsPing(**j)
 
+    def json(self):
+        for line in self.p.stdout:
+            j = json.loads(line)
+            yield j
+
     cpdef void open(self) except *:
         cdef str cmd
         if self.filename.endswith('.bz2') or self.filename.endswith('.bzip2'):
