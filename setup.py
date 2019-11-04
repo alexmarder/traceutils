@@ -21,7 +21,8 @@ extensions_names = {
     'traceutils.scamper.atlas': ['traceutils/scamper/atlas.pyx'],
     'traceutils.scamper.warts': ['traceutils/scamper/warts.pyx'],
     'traceutils.scamper.pyatlas': ['scamper/py_atlas.py'],
-    'traceutils.progress.bar': ['traceutils/progress/bar.py']
+    'traceutils.progress.bar': ['traceutils/progress/bar.py'],
+    'traceutils.traceparse': ['traceparse.py']
 }
 
 extensions = [Extension(k, v) for k, v in extensions_names.items()]
