@@ -26,8 +26,8 @@ cdef class File2:
     def __iter__(self):
         yield from self.f
 
-    cpdef read(self):
-        return self.f.read()
+    cpdef read(self, int size=-1):
+        return self.f.read(size)
 
     cpdef readline(self):
         return self.f.readline()
