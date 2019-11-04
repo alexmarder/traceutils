@@ -1,0 +1,4 @@
+include MANIFEST.in
+global-include *.pyx
+global-include *.pxd
+global-exclude *.pyc *.pyo *.pyd
