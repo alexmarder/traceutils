@@ -11,6 +11,7 @@ cdef class AS2Org:
         self.asn_names = StrDict()
         self.asn_org_names = StrDict()
         self.siblings = EmptyDict()
+        self.org_cc = {}
         org_names = {}
         read_org = False
         read_asn = False
@@ -28,6 +29,7 @@ cdef class AS2Org:
                 elif read_org:
                     org_id, changed, org_name, country, *extra = line.split('|')
                     org_names[org_id] = org_name
+                    self.org_cc[org_id] = country
                 elif read_asn:
                     aut, changed, aut_name, org_id, *extra = line.split('|')
                     asn = int(aut)
@@ -62,3 +64,6 @@ cdef class AS2Org:
 
     cpdef str asn_name(self, int asn):
         return self.asn_names[asn]
+
+    cpdef str asn_cc(self, int asn):
+        return self.org_cc.get(self[asn], 'NA')

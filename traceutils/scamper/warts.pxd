@@ -27,6 +27,8 @@ cdef class WartsTrace(Trace):
     cdef public int tos
     cdef public unsigned char probe_size
     cdef public unsigned char probe_count
+    cdef public int dport
+    cdef public int sport
 
 cdef class WartsPing:
     cdef public str type, version, method, src, dst
@@ -35,6 +37,12 @@ cdef class WartsPing:
     cdef public double wait, timeout
     cdef public list responses
     cdef public int family
+    cdef public int dport
+    cdef public int sport
+    cdef public int tcp_seq
+    cdef public int tcp_ack
+    cdef public list flags
+    cdef public list probe_tsps
 
 cdef list create_responses(list responses, int family);
 
@@ -45,6 +53,7 @@ cdef class WartsPingResponse:
     cdef public double rtt
     cdef public int family
     cdef public ICMPType type
+    cdef public list tsandaddr
 
 cdef class WartsReader(Reader):
     cdef bint trace

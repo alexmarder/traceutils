@@ -13,6 +13,7 @@ cdef class RadixNode:
         self.left = None
         self.right = None
         self.asn = 0
+        # self.data = None
 
     def __str__(self):
         return str(self.prefix)
