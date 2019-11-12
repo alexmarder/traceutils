@@ -18,7 +18,8 @@ cdef class WartsTrace(Trace):
             int icmp_sum=-1, str stop_reason='', int stop_data=-1, dict start=None, int hop_count=-1,
             int attempts=-1, unsigned char hoplimit=0, unsigned char firsthop=1, double wait=-1,
             int wait_probe=-1, int tos=-1, unsigned short probe_size=0, unsigned char probe_count=0,
-            list hops=None, str list_name='', int id=-1, str hostname='', long start_time=0
+            list hops=None, str list_name='', int id=-1, str hostname='', long start_time=0,
+            int dport=0, int sport=0
     ):
         self.src = src
         self.dst = dst
@@ -42,6 +43,8 @@ cdef class WartsTrace(Trace):
         self.tos = tos
         self.probe_size = probe_size
         self.probe_count = probe_count
+        self.dport = dport
+        self.sport = sport
 
 
 cdef class WartsHop(Hop):
@@ -79,7 +82,12 @@ cdef class WartsHop(Hop):
 
 
 cdef class WartsPing:
-    def __init__(self, str type='ping', str version=None, str method=None, str src=None, str dst=None, dict start=None, int ping_sent=-1, int probe_size=-1, int userid=-1, int ttl=-1, double wait=-1, int wait_us=-1, double timeout=-1, list responses=None, dict statistics=None):
+    def __init__(
+            self, str type='ping', str version=None, str method=None, str src=None, str dst=None, dict start=None,
+            int ping_sent=-1, int probe_size=-1, int userid=-1, int ttl=-1, double wait=-1, int wait_us=-1,
+            double timeout=-1, list responses=None, dict statistics=None,
+            int dport = 0, int sport = 0, int tcp_seq = 0, int tcp_ack = 0, list flags = None, list probe_tsps = None
+    ):
         self.type = type
         self.version = version
         self.method = method
@@ -95,6 +103,12 @@ cdef class WartsPing:
         self.timeout = timeout
         self.responses = create_responses(responses, self.family)
         self.statistics = statistics
+        self.dport = dport
+        self.sport = sport
+        self.tcp_seq = tcp_seq
+        self.tcp_ack = tcp_ack
+        self.flags = flags
+        self.probe_tsps = probe_tsps
 
     def __repr__(self):
         result = ['Src={src}, Dst={dst}:'.format(src=self.src, dst=self.dst)]
@@ -114,7 +128,11 @@ cdef list create_responses(list responses, int family):
 
 
 cdef class WartsPingResponse:
-    def __init__(self, int seq=-1, int reply_size=-1, int reply_ttl=-1, str reply_proto=None, dict tx=None, dict rx=None, double rtt=-1, int probe_ipid=-1, int reply_ipid=-1, int icmp_type=-1, int icmp_code=-1, int family=0):
+    def __init__(
+            self, int seq=-1, int reply_size=-1, int reply_ttl=-1, str reply_proto=None, dict tx=None, dict rx=None,
+            double rtt=-1, int probe_ipid=-1, int reply_ipid=-1, int icmp_type=-1, int icmp_code=-1, int family=0,
+            list tsandaddr = None
+    ):
         self.seq = seq
         self.reply_size = reply_size
         self.reply_ttl = reply_ttl
@@ -127,6 +145,7 @@ cdef class WartsPingResponse:
         self.icmp_type = icmp_type
         self.icmp_code = icmp_code
         self.family = family
+        self.tsandaddr = tsandaddr
         self.type = gettype(family, icmp_type, icmp_code)
 
     def __repr__(self):

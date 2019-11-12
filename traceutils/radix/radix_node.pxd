@@ -5,3 +5,4 @@ cdef class RadixNode:
     cdef RadixNode parent, left, right
     cdef public unsigned char bitlen
     cdef public long asn
+    # cdef public dict data
