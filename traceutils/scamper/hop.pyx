@@ -100,7 +100,10 @@ cdef class Trace:
             # poss_end1 = self.hops[end]
             # poss_end2 = self.hops[end+1]
             self.loop = self.hops[end:]
-            self.hops = self.hops[:end+1]
+            if len(self.loop) <= 3:
+                self.hops = self.hops[:end+1]
+            else:
+                self.hops = self.hops[:end]
             # if poss_end1.reply_ttl >= poss_end2.reply_ttl:
             #     self.hops = self.hops[:end+1]
             # else:
