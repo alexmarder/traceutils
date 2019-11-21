@@ -12,14 +12,12 @@ cdef class RadixNode:
             self.parent = parent
         self.left = None
         self.right = None
-        self.asn = 0
-        # self.data = None
 
     def __str__(self):
         return str(self.prefix)
 
     def __repr__(self):
-        return '<{} AS{}>'.format(self.prefix, self.asn)
+        return 'Prefix<{}>'.format(self.prefix)
 
     @property
     def network(self):
@@ -36,3 +34,19 @@ cdef class RadixNode:
     @property
     def packed(self):
         return self.prefix.packed
+
+cdef class RadixNodeASN(RadixNode):
+    def __init__(self, RadixPrefix prefix=None, unsigned char prefix_size=0, RadixNode parent=None, int asn=0):
+        super().__init__(prefix, prefix_size, parent)
+        self.asn = asn
+
+    def __repr__(self):
+        return '<{} ASN={}>'.format(self.prefix, self.asn)
+
+cdef class RadixNodeASNs(RadixNode):
+    def __init__(self, RadixPrefix prefix=None, unsigned char prefix_size=0, RadixNode parent=None, list asns=None):
+        super().__init__(prefix, prefix_size, parent)
+        self.asns = asns
+
+    def __repr__(self):
+        return '<{} ASNs={}>'.format(self.prefix, self.asns)

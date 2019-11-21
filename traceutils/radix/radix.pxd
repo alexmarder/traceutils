@@ -9,15 +9,15 @@ cdef class Radix:
     cdef RadixTree _tree6
     cdef long gen_id
 
-    cdef RadixNode _add(self, RadixPrefix prefix, long asn=*);
+    cdef RadixNode _add(self, RadixPrefix prefix);
     cdef void _delete(self, RadixNode node) except *;
     cdef RadixNode _search_exact(self, RadixPrefix prefix);
     cdef RadixNode _search_best(self, RadixPrefix prefix);
     cdef RadixNode _search_worst(self, RadixPrefix prefix);
     cdef list _search_covered(self, RadixPrefix prefix);
 
-    cpdef RadixNode add(self, str network, short masklen=*, long asn=*);
-    cpdef RadixNode add_packed(self, bytes packed, unsigned char masklen, long asn=*);
+    cpdef RadixNode add(self, str network, short masklen=*);
+    cpdef RadixNode add_packed(self, bytes packed, unsigned char masklen);
     cpdef void delete(self, str network, short masklen=*) except *;
     cpdef void delete_packed(self, bytes packed, unsigned char masklen) except *;
     cpdef RadixNode search_exact(self, str addr);

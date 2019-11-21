@@ -1,4 +1,4 @@
-from traceutils.radix.radix_node cimport RadixNode
+from traceutils.radix.radix_node cimport RadixNode, RadixNodeASN, RadixNodeASNs
 from traceutils.radix.radix_prefix cimport RadixPrefix
 
 
@@ -11,9 +11,16 @@ cdef class RadixTree:
     cdef RadixNode head
     cdef long active_nodes
 
+    cdef RadixNode create_node(self, RadixPrefix prefix=*, unsigned char prefix_size=*, RadixNode parent=*);
     cdef RadixNode add(self, RadixPrefix prefix);
     cdef void remove(self, RadixNode node) except *;
     cdef RadixNode search_best(self, RadixPrefix prefix);
     cdef RadixNode search_exact(self, RadixPrefix prefix);
     cdef RadixNode search_worst(self, RadixPrefix prefix);
     cdef list search_covered(self, RadixPrefix prefix);
+
+cdef class RadixTreeASN(RadixTree):
+    cdef RadixNodeASN add_asn(self, RadixPrefix prefix, int asn);
+
+cdef class RadixTreeASNs(RadixTree):
+    cdef RadixNodeASNs add_asns(self, RadixPrefix prefix, list asns);

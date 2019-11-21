@@ -38,6 +38,7 @@ extensions_names = {
     'traceutils.radix.radix_tree': ['traceutils/radix/radix_tree.pyx'],
     'traceutils.radix.radix': ['traceutils/radix/radix.pyx'],
     'traceutils.radix.ip2as': ['traceutils/radix/ip2as.pyx'],
+    'traceutils.radix.ip2ases': ['traceutils/radix/ip2ases.pyx'],
     'traceutils.scamper.hop': ['traceutils/scamper/hop.pyx'],
     'traceutils.scamper.atlas': ['traceutils/scamper/atlas.pyx'],
     'traceutils.scamper.warts': ['traceutils/scamper/warts.pyx'],

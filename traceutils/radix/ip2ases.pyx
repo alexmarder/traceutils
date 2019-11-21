@@ -1,7 +1,7 @@
 from traceutils.file2.file2 cimport File2
 from traceutils.radix.radix cimport Radix
-from traceutils.radix.radix_node cimport RadixNodeASN
-from traceutils.radix.radix_tree cimport RadixTreeASN
+from traceutils.radix.radix_node cimport RadixNodeASNs
+from traceutils.radix.radix_tree cimport RadixTreeASNs
 from libc.stdlib cimport atol
 
 cdef list PRIVATE4 = ['0.0.0.0/8', '10.0.0.8/8', '100.64.0.0/10', '127.0.0.0/8', '169.254.0.0/16', '172.16.0.0/12',
@@ -14,59 +14,62 @@ cdef list PRIVATE6 = ['::1/128', '::/128', '::ffff:0:0/96', '64:ff9b::/96', '100
 cdef str MULTICAST4 = '224.0.0.0/3'
 cdef str MULTICAST6 = 'FF00::/8'
 
-cdef class IP2AS(Radix):
+cdef class IP2ASes(Radix):
 
     def __init__(self):
-        tree4 = RadixTreeASN()
-        tree6 = RadixTreeASN()
+        tree4 = RadixTreeASNs()
+        tree6 = RadixTreeASNs()
         super().__init__(tree4, tree6)
 
     def __getitem__(self, str item):
-        return self.asn(item)
+        return self.asns(item)
 
-    cpdef RadixNodeASN add_asn(self, str network, short masklen=-1, long asn=0):
-        cdef RadixNodeASN node = self.add(network, masklen)
-        node.asn = asn
+    cpdef RadixNodeASNs add_asns(self, str network, short masklen=-1, list asns=None):
+        cdef RadixNodeASNs node = self.add(network, masklen)
+        node.asns = asns
         return node
 
-    cpdef long asn(self, str addr):
-        cdef RadixNodeASN node = self.search_best(addr)
+    cpdef list asns(self, str addr):
+        cdef RadixNodeASNs node = self.search_best(addr)
         if node:
-            return node.asn
-        return 0
+            return node.asns
+        return []
 
-    cpdef long asn_packed(self, bytes packed):
-        cdef RadixNodeASN node = self.search_best_packed(packed, -1)
+    cpdef list asns_packed(self, bytes packed):
+        cdef RadixNodeASNs node = self.search_best_packed(packed, -1)
         if node:
-            return node.asn
+            return node.asns
         return 0
 
     cpdef void add_private(self) except *:
         for prefix in PRIVATE4:
-            self.add_asn(prefix, -1, -1)
+            self.add_asns(prefix, -1, [-1])
         for prefix in PRIVATE6:
-            self.add_asn(prefix, -1, -1)
-        self.add_asn(MULTICAST4, -1, -1)
-        self.add_asn(MULTICAST6, -1, -1)
+            self.add_asns(prefix, -1, [-1])
+        self.add_asns(MULTICAST4, -1, [-1])
+        self.add_asns(MULTICAST6, -1, [-1])
 
 
-cpdef IP2AS create_private():
-    cdef IP2AS ip2as = IP2AS()
+cpdef IP2ASes create_private():
+    cdef IP2ASes ip2as = IP2ASes()
     ip2as.add_private()
     return ip2as
 
 
-cpdef IP2AS create_table(str filename):
-    cdef IP2AS ip2as
-    cdef bytes prefix, asn_str
+cpdef IP2ASes create_table(str filename):
+    cdef bytes prefix, asns_str, asn_str
     cdef long asn
     cdef str prefix_s
-    ip2as = IP2AS()
+    cdef list asns
+    cdef IP2ASes ip2as = IP2ASes()
     with File2(filename, 'rb') as f:
         f.readline()
         for line in f:
-            prefix, asn_str = line.rstrip().split()
-            asn = atol(asn_str)
+            asns = []
+            prefix, asns_str = line.rstrip().split()
+            for asn_str in asns_str.split(b','):
+                asn = atol(asn_str)
+                asns.append(asn)
             prefix_s = prefix.decode()
-            ip2as.add_asn(prefix_s, -1, asn=asn)
+            ip2as.add_asns(prefix_s, -1, asns=asns)
     return ip2as
