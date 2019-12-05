@@ -1,6 +1,6 @@
 cimport cython
 
-from traceutils.radix.radix_node cimport RadixNode
+from traceutils.radix.radix_node cimport RadixNode, RadixNodeASNs
 from traceutils.radix.radix_prefix cimport RadixPrefix
 
 
@@ -48,6 +48,9 @@ cdef class RadixTree:
         self.head = None
         self.active_nodes = 0
 
+    cdef RadixNode create_node(self, RadixPrefix prefix=None, unsigned char prefix_size=0, RadixNode parent=None):
+        return RadixNode(prefix, prefix_size, parent)
+
     cdef RadixNode add(self, RadixPrefix prefix):
         cdef RadixNode head, parent, new_node, glue_node
         cdef bytes addr, test_addr
@@ -56,7 +59,7 @@ cdef class RadixTree:
         node = self.head
         if node is None:
             # easy case
-            node = RadixNode(prefix)
+            node = self.create_node(prefix)
             self.head = node
             self.active_nodes += 1
             return node
@@ -101,7 +104,7 @@ cdef class RadixTree:
                 node.prefix = prefix
             return node
         # no match, new node
-        new_node = RadixNode(prefix)
+        new_node = self.create_node(prefix)
         self.active_nodes += 1
         # fix it up
         if node.bitlen == differ_bit:
@@ -125,7 +128,7 @@ cdef class RadixTree:
                 node.parent.left = new_node
             node.parent = new_node
         else:
-            glue_node = RadixNode(prefix_size=differ_bit, parent=node.parent)
+            glue_node = self.create_node(prefix=None, prefix_size=differ_bit, parent=node.parent)
             self.active_nodes += 1
             if addr_test(addr, differ_bit):
                 glue_node.right = new_node
@@ -311,3 +314,23 @@ cdef class RadixTree:
                 stack.append(node.left)
 
         return results
+
+cdef class RadixTreeASN(RadixTree):
+
+    cdef RadixNode create_node(self, RadixPrefix prefix=None, unsigned char prefix_size=0, RadixNode parent=None):
+        return RadixNodeASN(prefix, prefix_size, parent)
+
+    cdef RadixNodeASN add_asn(self, RadixPrefix prefix, int asn):
+        cdef RadixNodeASN node = <RadixNodeASN> self.add(prefix)
+        node.asn = asn
+        return node
+
+cdef class RadixTreeASNs(RadixTree):
+
+    cdef RadixNode create_node(self, RadixPrefix prefix=None, unsigned char prefix_size=0, RadixNode parent=None):
+        return RadixNodeASNs(prefix, prefix_size, parent)
+
+    cdef RadixNodeASNs add_asns(self, RadixPrefix prefix, list asns):
+        cdef RadixNodeASNs node = <RadixNodeASNs> self.add(prefix)
+        node.asns = asns
+        return node

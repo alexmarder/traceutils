@@ -4,5 +4,9 @@ cdef class RadixNode:
     cdef public RadixPrefix prefix
     cdef RadixNode parent, left, right
     cdef public unsigned char bitlen
-    cdef public long asn
-    # cdef public dict data
+
+cdef class RadixNodeASN(RadixNode):
+    cdef public int asn
+
+cdef class RadixNodeASNs(RadixNode):
+    cdef public list asns

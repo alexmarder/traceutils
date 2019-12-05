@@ -9,6 +9,8 @@ cpdef ICMPType gettype(int family, int icmp_type, int icmp_code) except *:
         elif icmp_type == 3:
             if icmp_code == 13:
                 return ICMPType.spoofing
+            elif icmp_code == 3:
+                return ICMPType.portping
             else:
                 return ICMPType.dest_unreach
         elif icmp_type == 8:
@@ -21,6 +23,8 @@ cpdef ICMPType gettype(int family, int icmp_type, int icmp_code) except *:
         elif icmp_type == 1:
             if icmp_code == 5:
                 return ICMPType.spoofing
+            elif icmp_code == 4:
+                return ICMPType.portping
             else:
                 return ICMPType.dest_unreach
         elif icmp_type == 128:
@@ -56,6 +60,7 @@ cdef class Trace:
     def __init__(self, str src, str dst, list hops):
         self.src = src
         self.dst = dst
+        self.allhops = hops
         self.hops = hops
         self.loop = None
         self.family = 0
@@ -100,7 +105,10 @@ cdef class Trace:
             # poss_end1 = self.hops[end]
             # poss_end2 = self.hops[end+1]
             self.loop = self.hops[end:]
-            self.hops = self.hops[:end+1]
+            if len(self.loop) <= 3:
+                self.hops = self.hops[:end+1]
+            else:
+                self.hops = self.hops[:end]
             # if poss_end1.reply_ttl >= poss_end2.reply_ttl:
             #     self.hops = self.hops[:end+1]
             # else:

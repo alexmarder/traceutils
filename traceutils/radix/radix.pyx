@@ -1,6 +1,6 @@
 from socket import AF_INET
 
-from traceutils.radix.radix_tree cimport RadixTree
+from traceutils.radix.radix_tree cimport RadixTree, RadixTreeASN
 from traceutils.radix.radix_node cimport RadixNode
 from traceutils.radix.radix_prefix cimport from_packed, from_network, from_address, RadixPrefix
 
@@ -36,9 +36,9 @@ cdef list _search_covering(RadixNode node):
 
 cdef class Radix:
 
-    def __init__(self):
-        self._tree4 = RadixTree()
-        self._tree6 = RadixTree()
+    def __init__(self, RadixTree tree4=None, RadixTree tree6=None):
+        self._tree4 = tree4 if tree4 is not None else RadixTree()
+        self._tree6 = tree6 if tree6 is not None else RadixTree()
         self.gen_id = 0            # detection of modifiction during iteration
 
     def __iter__(self):
@@ -54,13 +54,12 @@ cdef class Radix:
                 raise RuntimeWarning('detected modification during iteration')
             yield elt
 
-    cdef RadixNode _add(self, RadixPrefix prefix, long asn=0):
+    cdef RadixNode _add(self, RadixPrefix prefix):
         cdef RadixNode node
         if prefix.family == AF_INET:
             node = self._tree4.add(prefix)
         else:
             node = self._tree6.add(prefix)
-        node.asn = asn
         self.gen_id += 1
         return node
 
@@ -96,11 +95,11 @@ cdef class Radix:
             return self._tree4.search_covered(prefix)
         return self._tree6.search_covered(prefix)
 
-    cpdef RadixNode add(self, str network, short masklen=-1, long asn=0):
-        return self._add(from_network(network, masklen), asn)
+    cpdef RadixNode add(self, str network, short masklen=-1):
+        return self._add(from_network(network, masklen))
 
-    cpdef RadixNode add_packed(self, bytes packed, unsigned char masklen, long asn=0):
-        return self._add(from_packed(packed, masklen), asn)
+    cpdef RadixNode add_packed(self, bytes packed, unsigned char masklen):
+        return self._add(from_packed(packed, masklen))
 
     cpdef void delete(self, str network, short masklen=-1) except *:
         self._delete(self.search_exact_prefix(network, masklen))

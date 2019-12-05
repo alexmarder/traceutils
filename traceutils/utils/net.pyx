@@ -178,3 +178,6 @@ cpdef str otherside(str addr, int num):
     else:
         result = otherside6(addr_b, num)
     return result.decode()
+
+cpdef bint valid(long asn) except -1:
+    return asn != 23456 and 0 < asn < 64496 or 131071 < asn < 400000

@@ -24,7 +24,8 @@ cdef class WartsTrace(Trace):
         self.src = src
         self.dst = dst
         self.family = find_family(dst.encode())
-        self.hops = create_hops(hops, self.family)
+        self.allhops = create_hops(hops, self.family)
+        self.hops = self.allhops
 
         self.type = type
         self.version = version

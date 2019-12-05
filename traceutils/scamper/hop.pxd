@@ -9,6 +9,7 @@ cpdef enum ICMPType:
     time_exceeded = 4
     echo_request = 5
     spoofing = 6
+    portping = 7
 
 cpdef ICMPType gettype(int family, int icmp_type, int icmp_code) except *;
 
@@ -34,7 +35,7 @@ cdef class Hop:
 cdef class Trace:
     cdef public str src
     cdef public str dst
-    cdef public list hops
+    cdef public list hops, allhops
     cdef public list loop
     cdef public int family
 

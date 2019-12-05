@@ -4,7 +4,7 @@ from traceutils.utils.dicts cimport EmptyDict, ZeroDict
 
 cdef class BGP:
 
-    def __init__(self, str rels, str cone):
+    def __init__(self, str rels, str cone, str extras = None):
         cdef str line
         cdef int x, y, rel
         cdef list customers
@@ -26,6 +26,19 @@ cdef class BGP:
                     elif rel == 0:
                         _peers[x].add(y)
                         _peers[y].add(x)
+        if extras is not None:
+            with File2(extras) as f:
+                for line in f:
+                    if not line.startswith('#'):
+                        x, y, rel = map(int, line.strip().split('|'))
+                        self.rels.add((x, y))
+                        self.rels.add((y, x))
+                        if rel == -1:
+                            _customers[x].add(y)
+                            _providers[y].add(x)
+                        elif rel == 0:
+                            _peers[x].add(y)
+                            _peers[y].add(x)
         with File2(cone) as f:
             for line in f:
                 if not line.startswith('#'):
