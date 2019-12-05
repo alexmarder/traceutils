@@ -63,7 +63,7 @@ cpdef IP2AS create_table(str filename):
     cdef str prefix_s
     ip2as = IP2AS()
     with File2(filename, 'rb') as f:
-        f.readline()
+        # f.readline()
         for line in f:
             prefix, asn_str = line.rstrip().split()
             asn = atol(asn_str)

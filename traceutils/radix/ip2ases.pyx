@@ -63,7 +63,7 @@ cpdef IP2ASes create_table(str filename):
     cdef list asns
     cdef IP2ASes ip2as = IP2ASes()
     with File2(filename, 'rb') as f:
-        f.readline()
+        # f.readline()
         for line in f:
             asns = []
             prefix, asns_str = line.rstrip().split()
