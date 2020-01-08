@@ -88,7 +88,7 @@ cdef class Trace:
                 hops[-1] = hop
         self.hops = hops
 
-    cpdef void prune_loops(self) except *:
+    cpdef void prune_loops(self, bint keepfirst=False) except *:
         cdef set seen = set()
         cdef int end = len(self.hops), i
         cdef str addr, prev
@@ -105,7 +105,7 @@ cdef class Trace:
             # poss_end1 = self.hops[end]
             # poss_end2 = self.hops[end+1]
             self.loop = self.hops[end:]
-            if len(self.loop) <= 3:
+            if keepfirst or len(self.loop) <= 3:
                 self.hops = self.hops[:end+1]
             else:
                 self.hops = self.hops[:end]
