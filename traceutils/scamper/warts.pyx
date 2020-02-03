@@ -19,13 +19,14 @@ cdef class WartsTrace(Trace):
             int attempts=-1, unsigned char hoplimit=0, unsigned char firsthop=1, double wait=-1,
             int wait_probe=-1, int tos=-1, unsigned short probe_size=0, unsigned char probe_count=0,
             list hops=None, str list_name='', int id=-1, str hostname='', long start_time=0,
-            int dport=0, int sport=0
+            int dport=0, int sport=0, str jdata=None
     ):
         self.src = src
         self.dst = dst
         self.family = find_family(dst.encode())
         self.allhops = create_hops(hops, self.family)
         self.hops = self.allhops
+        self.jdata = jdata
 
         self.type = type
         self.version = version
@@ -168,7 +169,7 @@ cdef class WartsReader(Reader):
             rtype = j['type']
             if rtype == 'trace':
                 if self.trace:
-                    yield WartsTrace(**j)
+                    yield WartsTrace(jdata=line, **j)
             elif rtype == 'ping':
                 if self.ping:
                     yield WartsPing(**j)
