@@ -13,8 +13,10 @@ cdef class AtlasHop(Hop):
     cdef list hdropts
 
 cdef class AtlasTrace(Trace):
-    cdef public int af, fw, group_id, lts, msm_id, paris_id, prb_id, size
-    cdef public str dst_addr, dst_name, msm_name, proto, src_addr, type
+    cdef public int af
+    # cdef public int fw, group_id, lts, msm_id, paris_id, size
+    cdef public str dst_name, proto, type
+    # cdef public str dst_addr, msm_name, src_addr
     cdef public long endtime, timestamp
     cdef public list result
 

@@ -7,7 +7,6 @@ from traceutils.scamper.hop cimport Hop, Trace, Reader
 class AtlasErrorException(Exception):
     pass
 
-
 cdef list create_hops(list hops, int family):
     cdef list hopslist = []
     cdef dict h, result
@@ -21,13 +20,12 @@ cdef list create_hops(list hops, int family):
             if not results:
                 continue
             # print(h['result'])
-            for result in h['result']:
+            for result in results:
                 if 'from' in result:
                     hop = AtlasHop(hop=h['hop'], family=family, **result)
                     hopslist.append(hop)
                     break
     return hopslist
-
 
 cdef class AtlasHop(Hop):
     def __init__(self, int hop=-1, double rtt=float('nan'), int size=-1, int ttl=-1, err=None, int itos=0, int ittl=1, str flags=None, dict icmpext=None, int late=0, int dup=0, str edst=None, list hdropts=None, family=0, **kwargs):
@@ -35,7 +33,7 @@ cdef class AtlasHop(Hop):
         # For now, if I messed up the family, assume IPv4.
         # Will change later when I get Atlas IPv6 traceroutes to test against
         if family == 0:
-            family = 4
+            family = AF_INET
         if not err:
             if family == AF_INET:
                 icmp_type = 11
@@ -78,29 +76,19 @@ cdef class AtlasHop(Hop):
         self.edst = edst
         self.hdropts = hdropts
 
-
 cdef class AtlasTrace(Trace):
-    def __init__(self, int af=0, str dst_addr='', str dst_name='', long endtime=0, int fw=0, int group_id=0, int lts=0, int msm_id=0, str msm_name='', int paris_id=0, int prb_id=0, str proto='', list result=None, int size=0, str src_addr='', long timestamp=0, str type='', **kwargs):
+    def __init__(self, int af=0, str dst_addr='', str dst_name='', long endtime=0, str proto='', list result=None, str src_addr='', long timestamp=0, str type='', str jdata=None, **kwargs):
         self.src = src_addr
         self.dst = dst_addr
         self.family = AF_INET if af == 4 else AF_INET6
         self.hops = create_hops(result, self.family)
+        self.jdata = jdata
 
         self.af = af
-        self.dst_addr = dst_addr
         self.dst_name = dst_name
         self.endtime = endtime
-        self.fw = fw
-        self.group_id = group_id
-        self.lts = lts
-        self.msm_id = msm_id
-        self.msm_name = msm_name
-        self.paris_id = paris_id
-        self.prb_id = prb_id
         self.proto = proto
         self.result = result
-        self.size = size
-        self.src_addr = src_addr
         self.timestamp = timestamp
         self.type = type
 
@@ -115,15 +103,14 @@ cdef class AtlasReader(Reader):
         cdef dict result
         for line in self.f:
             j = json.loads(line)
-            # print(j)
             if isinstance(j, list):
                 for result in j:
                     if result['type'] == 'traceroute':
-                        yield AtlasTrace(**result)
+                        yield AtlasTrace(jdata=line, **result)
             else:
                 result = j
                 if result['type'] == 'traceroute':
-                    yield AtlasTrace(**result)
+                    yield AtlasTrace(jdata=line, **result)
 
     cpdef void open(self) except *:
         self.f = File2(self.filename)
