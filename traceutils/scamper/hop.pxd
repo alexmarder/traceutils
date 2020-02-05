@@ -38,6 +38,7 @@ cdef class Trace:
     cdef public list hops, allhops
     cdef public list loop
     cdef public int family
+    cdef public str jdata
 
     cpdef list addrs(self);
     cpdef void prune_dups(self) except *;

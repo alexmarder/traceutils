@@ -64,6 +64,7 @@ cdef class Trace:
         self.hops = hops
         self.loop = None
         self.family = 0
+        self.jdata = None
 
     def __repr__(self):
         return '\n'.join(repr(hop) for hop in self.hops)
