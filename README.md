@@ -3,3 +3,5 @@ This package supports other packages that I write. I ended up using it so often 
 
 # Installation
 It can now be install via pip. `pip install traceutils`
+
+**Bug in cython prevents using python >= 3.8**
