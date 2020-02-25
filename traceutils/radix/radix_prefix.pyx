@@ -5,6 +5,10 @@ from libc.stdlib cimport atoi
 
 
 cdef class RadixPrefix:
+    # def __init__(self, bytes addr=None, unsigned char bitlen=0, unsigned char family=0):
+    #     self.addr = addr
+    #     self.bitlen = bitlen
+    #     self.family = family
 
     def __repr__(self):
         return self.network()

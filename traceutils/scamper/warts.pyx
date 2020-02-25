@@ -1,3 +1,5 @@
+import bz2
+import gzip
 import json as json
 from subprocess import Popen, PIPE
 
@@ -193,3 +195,44 @@ cdef class WartsReader(Reader):
         self.p.stdout.close()
         self.p.wait()
         self.p = None
+
+cdef class WartsJsonReader(Reader):
+    def __init__(self, str filename, bint trace=True, bint ping=True):
+        self.filename = filename
+        self.f = None
+        self.trace = trace
+        self.ping = ping
+
+    def __iter__(self):
+        cdef str line, rtype
+        cdef dict j
+        for line in self.f:
+            j = json.loads(line)
+            rtype = j['type']
+            if rtype == 'trace':
+                if self.trace:
+                    try:
+                        yield WartsTrace(jdata=line, **j)
+                    except:
+                        print(line)
+                        raise
+            elif rtype == 'ping':
+                if self.ping:
+                    yield WartsPing(**j)
+
+    def json(self):
+        for line in self.f:
+            j = json.loads(line)
+            yield j
+
+    cpdef void open(self) except *:
+        cdef str cmd
+        if self.filename.endswith('.bz2') or self.filename.endswith('.bzip2'):
+            self.f = bz2.open(self.filename, 'rt')
+        elif self.filename.endswith('.gz'):
+            self.f = gzip.open(self.filename, 'rt')
+        else:
+            self.f = open(self.filename, 'rt')
+
+    cpdef void close(self) except *:
+        self.f.close()
