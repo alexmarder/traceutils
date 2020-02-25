@@ -3,7 +3,7 @@ from traceutils.radix.radix_prefix cimport RadixPrefix
 
 
 cdef unsigned char addr_test(bytes addr, unsigned char bitlen);
-cdef bint prefix_match(RadixPrefix left, RadixPrefix right, unsigned char bitlen);
+cdef bint prefix_match(RadixPrefix left, RadixPrefix right, unsigned char bitlen) except -1;
 # cdef bint prefix_match2(bytes left, bytes right, unsigned char bitlen);
 
 cdef class RadixTree:

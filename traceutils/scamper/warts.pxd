@@ -61,3 +61,11 @@ cdef class WartsReader(Reader):
 
     cpdef void open(self) except *;
     cpdef void close(self) except *;
+
+cdef class WartsJsonReader(Reader):
+    cdef bint trace
+    cdef bint ping
+    cdef f
+
+    cpdef void open(self) except *;
+    cpdef void close(self) except *;

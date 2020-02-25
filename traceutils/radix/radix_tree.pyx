@@ -18,17 +18,22 @@ cdef unsigned char addr_test(bytes addr, unsigned char bitlen):
 @cython.cdivision(True)
 # @cython.boundscheck(False)
 # @cython.overflowcheck(False)
-cdef bint prefix_match(RadixPrefix left, RadixPrefix right, unsigned char bitlen):
+cdef bint prefix_match(RadixPrefix left, RadixPrefix right, unsigned char bitlen) except -1:
     cdef bytes laddr, raddr
     cdef unsigned char quotient, remainder, mask, bitmainder, lmask, rmask, biteq
     laddr = left.addr
     raddr = right.addr
     if laddr is None or raddr is None:
         return False
-    quotient = bitlen / 8
-    for i in range(quotient):
-        if laddr[i] != raddr[i]:
-            return False
+    try:
+        quotient = bitlen / 8
+        for i in range(quotient):
+            if laddr[i] != raddr[i]:
+                return False
+    except TypeError:
+        # print(laddr, raddr, type(laddr) == type(bytes), type(raddr) == type(bytes))
+        return False
+        # raise
     remainder = bitlen % 8
     if remainder == 0:
         return True
