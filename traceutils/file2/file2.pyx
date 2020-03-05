@@ -24,7 +24,12 @@ cdef class File2:
         return False
 
     def __iter__(self):
-        yield from self.f
+        # yield from self.f
+        while True:
+            try:
+                yield next(self.f)
+            except EOFError:
+                break
 
     cpdef read(self, int size=-1):
         return self.f.read(size)

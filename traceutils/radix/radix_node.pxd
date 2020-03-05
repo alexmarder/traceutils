@@ -10,3 +10,6 @@ cdef class RadixNodeASN(RadixNode):
 
 cdef class RadixNodeASNs(RadixNode):
     cdef public list asns
+
+cdef class RadixNodeData(RadixNode):
+    cdef public dict data

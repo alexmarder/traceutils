@@ -339,3 +339,14 @@ cdef class RadixTreeASNs(RadixTree):
         cdef RadixNodeASNs node = <RadixNodeASNs> self.add(prefix)
         node.asns = asns
         return node
+
+cdef class RadixTreeData(RadixTree):
+
+    cdef RadixNode create_node(self, RadixPrefix prefix=None, unsigned char prefix_size=0, RadixNode parent=None):
+        return RadixNodeData(prefix, prefix_size, parent)
+
+    cdef RadixNodeData add_data(self, RadixPrefix prefix, dict data=None):
+        cdef RadixNodeData node = <RadixNodeData> self.add(prefix)
+        if data is not None:
+            node.data.update(data)
+        return node

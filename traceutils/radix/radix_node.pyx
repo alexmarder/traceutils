@@ -50,3 +50,11 @@ cdef class RadixNodeASNs(RadixNode):
 
     def __repr__(self):
         return '<{} ASNs={}>'.format(self.prefix, self.asns)
+
+cdef class RadixNodeData(RadixNode):
+    def __init__(self, RadixPrefix prefix=None, unsigned char prefix_size=0, RadixNode parent=None, **kwargs):
+        super().__init__(prefix, prefix_size, parent)
+        self.data = kwargs
+
+    def __repr__(self):
+        return '<{} Data={}>'.format(self.prefix, self.data)

@@ -41,6 +41,7 @@ cdef class Trace:
     cdef public str jdata
 
     cpdef list addrs(self);
+    cpdef unsigned char mark_loop(self) except? -1;
     cpdef void prune_dups(self) except *;
     cpdef void prune_loops(self, bint keepfirst=*) except *;
     cpdef void prune_private(self, IP2AS ip2as) except *

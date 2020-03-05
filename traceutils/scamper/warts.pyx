@@ -16,7 +16,7 @@ cdef list create_hops(list hops, int family):
 cdef class WartsTrace(Trace):
 
     def __init__(
-            self, str type='', str version='', int userid=-1, str method='', str src='', str dst='',
+            self, str type='', str version='', userid=-1, str method='', str src='', str dst='',
             int icmp_sum=-1, str stop_reason='', int stop_data=-1, dict start=None, int hop_count=-1,
             int attempts=-1, unsigned char hoplimit=0, unsigned char firsthop=1, double wait=-1,
             int wait_probe=-1, int tos=-1, unsigned short probe_size=0, unsigned char probe_count=0,
