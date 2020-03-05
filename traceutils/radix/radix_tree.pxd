@@ -1,4 +1,4 @@
-from traceutils.radix.radix_node cimport RadixNode, RadixNodeASN, RadixNodeASNs
+from traceutils.radix.radix_node cimport RadixNode, RadixNodeASN, RadixNodeASNs, RadixNodeData
 from traceutils.radix.radix_prefix cimport RadixPrefix
 
 
@@ -24,3 +24,6 @@ cdef class RadixTreeASN(RadixTree):
 
 cdef class RadixTreeASNs(RadixTree):
     cdef RadixNodeASNs add_asns(self, RadixPrefix prefix, list asns);
+
+cdef class RadixTreeData(RadixTree):
+    cdef RadixNodeData add_data(self, RadixPrefix prefix, dict data=*)

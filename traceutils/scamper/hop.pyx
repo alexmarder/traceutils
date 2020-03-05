@@ -89,11 +89,10 @@ cdef class Trace:
                 hops[-1] = hop
         self.hops = hops
 
-    cpdef void prune_loops(self, bint keepfirst=False) except *:
-        cdef set seen = set()
-        cdef int end = len(self.hops), i
+    cpdef unsigned char mark_loop(self) except? -1:
         cdef str addr, prev
-        # cdef Hop poss_end1, poss_end2
+        cdef set seen = set()
+        cdef unsigned char end = len(self.hops), i
         prev = None
         for i in range(len(self.hops) - 1, -1, -1):
             addr = self.hops[i].addr
@@ -103,17 +102,46 @@ cdef class Trace:
                 seen.add(addr)
             prev = addr
         if end < len(self.hops):
-            # poss_end1 = self.hops[end]
-            # poss_end2 = self.hops[end+1]
-            self.loop = self.hops[end:]
-            if keepfirst or len(self.loop) <= 3:
-                self.hops = self.hops[:end+1]
-            else:
-                self.hops = self.hops[:end]
-            # if poss_end1.reply_ttl >= poss_end2.reply_ttl:
-            #     self.hops = self.hops[:end+1]
-            # else:
-            #     self.hops = self.hops[:end]
+            return end
+        return 255
+
+    # cpdef void prune_loops(self, bint keepfirst=False) except *:
+    #     cdef set seen = set()
+    #     cdef int end = len(self.hops), i
+    #     cdef str addr, prev
+    #     # cdef Hop poss_end1, poss_end2
+    #     prev = None
+    #     for i in range(len(self.hops) - 1, -1, -1):
+    #         addr = self.hops[i].addr
+    #         if addr in seen and addr != prev:
+    #             end = i
+    #         else:
+    #             seen.add(addr)
+    #         prev = addr
+    #     if end < len(self.hops):
+    #         # poss_end1 = self.hops[end]
+    #         # poss_end2 = self.hops[end+1]
+    #         self.loop = self.hops[end:]
+    #         self.loopstart = end
+    #         if keepfirst or len(self.loop) <= 3:
+    #             self.hops = self.hops[:end+1]
+    #         else:
+    #             self.hops = self.hops[:end]
+    #         # if poss_end1.reply_ttl >= poss_end2.reply_ttl:
+    #         #     self.hops = self.hops[:end+1]
+    #         # else:
+    #         #     self.hops = self.hops[:end]
+    cpdef void prune_loops(self, bint keepfirst=False) except *:
+        cdef unsigned char end = self.mark_loop()
+        self.loop = self.hops[end:]
+        if keepfirst or len(self.loop) <= 3:
+            self.hops = self.hops[:end+1]
+        else:
+            self.hops = self.hops[:end]
+        # if poss_end1.reply_ttl >= poss_end2.reply_ttl:
+        #     self.hops = self.hops[:end+1]
+        # else:
+        #     self.hops = self.hops[:end]
 
     cpdef void prune_private(self, IP2AS ip2as) except *:
         cdef Hop h

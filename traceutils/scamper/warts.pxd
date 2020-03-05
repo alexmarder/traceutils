@@ -12,7 +12,7 @@ cdef class WartsHop(Hop):
 cdef class WartsTrace(Trace):
     cdef public str type
     cdef public str version
-    cdef public int userid
+    cdef public userid
     cdef public str method
     cdef public int icmp_sum
     cdef public str stop_reason
