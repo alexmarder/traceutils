@@ -53,7 +53,7 @@ package_data = {k: ['*.pxd'] for k in extensions_names}
 
 setup(
     name="traceutils",
-    version='6.15.8',
+    version='6.15.9',
     author='Alex Marder',
     description="Various packages for traceroute and BGP dump analysis.",
     url="https://github.com/alexmarder/traceutils",
