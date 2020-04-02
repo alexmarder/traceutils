@@ -10,6 +10,8 @@ cpdef enum ICMPType:
     echo_request = 5
     spoofing = 6
     portping = 7
+    net_unreach = 8
+    host_unreach = 9
 
 cpdef ICMPType gettype(int family, int icmp_type, int icmp_code) except *;
 

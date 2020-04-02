@@ -48,3 +48,10 @@ cdef class File2:
 
     cpdef void writelines(self, lines) except *:
         self.f.writelines(lines)
+
+def fopen(str filename, str mode='rt', *args, **kwargs):
+    if filename.endswith('.gz'):
+        return gzip.open(filename, mode, *args, **kwargs)
+    elif filename.endswith('.bz2'):
+        return bz2.open(filename, mode, *args, **kwargs)
+    return open(filename, mode, *args, **kwargs)

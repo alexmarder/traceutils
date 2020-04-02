@@ -11,6 +11,10 @@ cpdef ICMPType gettype(int family, int icmp_type, int icmp_code) except *:
                 return ICMPType.spoofing
             elif icmp_code == 3:
                 return ICMPType.portping
+            elif icmp_code == 0:
+                return ICMPType.net_unreach
+            elif icmp_code == 1:
+                return ICMPType.host_unreach
             else:
                 return ICMPType.dest_unreach
         elif icmp_type == 8:
@@ -21,7 +25,7 @@ cpdef ICMPType gettype(int family, int icmp_type, int icmp_code) except *:
         if icmp_type == 129:
             return ICMPType.echo_reply
         elif icmp_type == 1:
-            if icmp_code == 5:
+            if icmp_code == 1:
                 return ICMPType.spoofing
             elif icmp_code == 4:
                 return ICMPType.portping

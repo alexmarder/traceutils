@@ -21,7 +21,7 @@ cdef list create_hops(list hops, int family):
                 continue
             # print(h['result'])
             for result in results:
-                if 'from' in result:
+                if 'from' in result and 'late' not in result:
                     hop = AtlasHop(hop=h['hop'], family=family, **result)
                     hopslist.append(hop)
                     break
