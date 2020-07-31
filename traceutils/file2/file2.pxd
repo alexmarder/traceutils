@@ -11,3 +11,5 @@ cdef class File2:
     cpdef void close(self) except *;
     cpdef void write(self, data) except *;
     cpdef void writelines(self, lines) except *;
+
+# cpdef fopen(str filename, str mode=*, *args, **kwargs);

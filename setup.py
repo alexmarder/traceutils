@@ -43,7 +43,7 @@ extensions_names = {
     'traceutils.scamper.hop': ['traceutils/scamper/hop.pyx'],
     'traceutils.scamper.atlas': ['traceutils/scamper/atlas.pyx'],
     'traceutils.scamper.warts': ['traceutils/scamper/warts.pyx'],
-    'traceutils.scamper.pyatlas': ['scamper/py_atlas.py'],
+    'traceutils.scamper.pyatlas': ['traceutils/scamper/py_atlas.py'],
     'traceutils.progress.bar': ['traceutils/progress/bar.py'],
     # 'traceutils.traceparse': ['traceparse.py']
 }
@@ -53,7 +53,7 @@ package_data = {k: ['*.pxd'] for k in extensions_names}
 
 setup(
     name="traceutils",
-    version='6.15.9',
+    version='6.16.3',
     author='Alex Marder',
     description="Various packages for traceroute and BGP dump analysis.",
     url="https://github.com/alexmarder/traceutils",
