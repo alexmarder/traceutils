@@ -1,6 +1,7 @@
 from traceutils.ixps.peeringdb_base import AbstractPeeringDB
 from traceutils.ixps import peeringdb, peeringdb_v1
-from traceutils.ixps.ixps import *
+from traceutils.ixps.ixps import PeeringDB
+from traceutils.ixps.caida import CaidaIXPs
 
 
 def create_peeringdb(filename):

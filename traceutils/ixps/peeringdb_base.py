@@ -1,3 +1,6 @@
+from traceutils.radix import create_private
+
+
 class AbstractIX:
     def __init__(self, city, country, id, media, name, name_long, policy_email, policy_phone, proto_ipv6, proto_multicast, proto_unicast, region_continent, tech_email, tech_phone, url_stats, website, **kwargs):
         self.city = city
@@ -27,3 +30,9 @@ class AbstractPeeringDB:
         self.addrs = {}
         self.ixs = {}
         self.prefixes = {}
+
+    def totrie(self):
+        ip2as = create_private()
+        for prefix, pdbid in self.prefixes.items():
+            ip2as.add_asn(prefix, asn=-100 - pdbid)
+        return ip2as

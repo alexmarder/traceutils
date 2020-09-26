@@ -54,4 +54,4 @@ def fopen(str filename, str mode='rt', *args, **kwargs):
         return gzip.open(filename, mode, *args, **kwargs)
     elif filename.endswith('.bz2'):
         return bz2.open(filename, mode, *args, **kwargs)
-    return open(filename, mode, *args, **kwargs)
+    return open(filename, mode, *args, **kwargs)        
