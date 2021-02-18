@@ -1,11 +1,13 @@
 from itertools import filterfalse, groupby
 from operator import itemgetter
+from libc.math cimport NAN, isnan, INFINITY
 
 
 cpdef list max_num(iterable, key=None):
-    cdef list max_items = []
-    cdef float max_value = float('-inf')
-    cdef float value
+    cdef:
+        list max_items = []
+        float max_value = float('-inf')
+        float value
     for item, value in zip(iterable, (map(key, iterable) if key else iterable)):
         if value > max_value:
             max_items = [item]
@@ -16,10 +18,12 @@ cpdef list max_num(iterable, key=None):
 
 
 cpdef tuple max2(iterable, key=None):
+    cdef:
+        float first_value = -INFINITY
+        float second_value = -INFINITY
+        float n
     first = None
     second = None
-    first_value = float('-inf')
-    second_value = float('-inf')
     for v in iterable:
         n = key(v) if key is not None else v
         if n > first_value:
@@ -32,6 +36,23 @@ cpdef tuple max2(iterable, key=None):
             second_value = n
     return first, first_value, second, second_value
 
+cpdef tuple max2_values(iterable):
+    cdef:
+        float first_value = -INFINITY
+        float second_value = -INFINITY
+        float n
+    first = None
+    second = None
+    for v, n in iterable.items():
+        if n > first_value:
+            second = first
+            second_value = first_value
+            first = v
+            first_value = n
+        elif n > second_value:
+            second = v
+            second_value = n
+    return first, first_value, second, second_value
 
 def unique_everseen(iterable, key=None):
     cdef set seen = set()
