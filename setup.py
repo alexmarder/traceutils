@@ -50,7 +50,7 @@ if use_cython:
 
 setup(
     name="traceutils",
-    version='6.16.7',
+    version='6.16.8',
     author='Alex Marder',
     description="Various packages for traceroute and BGP dump analysis.",
     url="https://github.com/alexmarder/traceutils",
