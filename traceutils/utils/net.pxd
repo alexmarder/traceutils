@@ -1,5 +1,5 @@
 IF UNAME_SYSNAME == 'Windows':
-    cdef extern from '<winsock2.h>':
+    cdef extern from '<ws2tcpip.h>':
         ctypedef int socklen_t
         cdef socklen_t INET_ADDRSTRLEN, INET6_ADDRSTRLEN
         cdef int AF_INET, AF_INET6

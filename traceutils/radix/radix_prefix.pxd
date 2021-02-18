@@ -1,6 +1,11 @@
-cdef extern from '<arpa/inet.h>':
-    cdef int AF_INET, AF_INET6
-    cdef int inet_pton(int, char*, void*)
+IF UNAME_SYSNAME == 'Windows':
+    cdef extern from '<ws2tcpip.h>':
+        cdef int AF_INET, AF_INET6
+        cdef int inet_pton(int, char*, void*)
+ELSE:
+    cdef extern from '<arpa/inet.h>':
+        cdef int AF_INET, AF_INET6
+        cdef int inet_pton(int, char*, void*)
 
 cdef class RadixPrefix:
     cdef readonly bytes addr
