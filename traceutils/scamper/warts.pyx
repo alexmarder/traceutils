@@ -1,6 +1,6 @@
 import bz2
 import gzip
-import json as json
+import orjson as json
 from subprocess import Popen, PIPE
 
 from traceutils.scamper.hop cimport Hop, Trace, Reader, gettype
@@ -21,7 +21,7 @@ cdef class WartsTrace(Trace):
             int attempts=-1, unsigned char hoplimit=0, unsigned char firsthop=1, double wait=-1,
             int wait_probe=-1, int tos=-1, unsigned short probe_size=0, unsigned char probe_count=0,
             list hops=None, str list_name='', int id=-1, str hostname='', long start_time=0,
-            int dport=0, int sport=0, str jdata=None
+            int dport=0, int sport=0, str rtr=None, str jdata=None
     ):
         self.src = src
         self.dst = dst
@@ -49,6 +49,7 @@ cdef class WartsTrace(Trace):
         self.probe_count = probe_count
         self.dport = dport
         self.sport = sport
+        self.rtr = rtr
 
 
 cdef class WartsHop(Hop):
@@ -126,17 +127,18 @@ cdef list create_responses(list responses, int family):
     cdef dict resp
     resps = []
     for resp in responses:
-        resp.pop('from', None)
+        resp['src'] = resp.pop('from', None)
         resps.append(WartsPingResponse(family=family, **resp))
     return resps
 
 
 cdef class WartsPingResponse:
     def __init__(
-            self, int seq=-1, int reply_size=-1, int reply_ttl=-1, str reply_proto=None, dict tx=None, dict rx=None,
+            self, str src=None, int seq=-1, int reply_size=-1, int reply_ttl=-1, str reply_proto=None, dict tx=None, dict rx=None,
             double rtt=-1, int probe_ipid=-1, int reply_ipid=-1, int icmp_type=-1, int icmp_code=-1, int family=0,
             list tsandaddr = None
     ):
+        self.src = src
         self.seq = seq
         self.reply_size = reply_size
         self.reply_ttl = reply_ttl
@@ -181,6 +183,9 @@ cdef class WartsReader(Reader):
             j = json.loads(line)
             yield j
 
+    def raw(self):
+        return self.p.stdout
+
     cpdef void open(self) except *:
         cdef str cmd
         if self.filename.endswith('.bz2') or self.filename.endswith('.bzip2'):
@@ -224,6 +229,9 @@ cdef class WartsJsonReader(Reader):
         for line in self.f:
             j = json.loads(line)
             yield j
+
+    def raw(self):
+        return self.f
 
     cpdef void open(self) except *:
         cdef str cmd

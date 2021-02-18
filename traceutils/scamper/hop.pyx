@@ -151,6 +151,10 @@ cdef class Trace:
         cdef Hop h
         self.hops = [h for h in self.hops if ip2as[h.addr] != -1]
 
+    cpdef void prune_src(self, str src2=None) except *:
+        cdef Hop h
+        self.hops = [h for h in self.hops if h.addr != self.src and h.addr != src2]
+
     cpdef void set_packed(self) except *:
         for hop in self.hops:
             hop.set_packed()
@@ -165,6 +169,9 @@ cdef class Reader:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
         return False
+
+    def raw(self):
+        raise NotImplementedError()
 
     cpdef void open(self) except *:
         raise NotImplementedError()
