@@ -32,7 +32,7 @@ extensions_names = {
     'traceutils.scamper.hop': ['traceutils/scamper/hop' + ext_pyx],
     'traceutils.scamper.atlas': ['traceutils/scamper/atlas' + ext_pyx],
     'traceutils.scamper.warts': ['traceutils/scamper/warts' + ext_pyx],
-    'traceutils.scamper.pyatlas': ['traceutils/scamper/py_atlas' + ext_py],
+    # 'traceutils.scamper.pyatlas': ['traceutils/scamper/py_atlas' + ext_py],
     'traceutils.progress.bar': ['traceutils/progress/bar' + ext_py],
     # 'traceutils.traceparse': ['traceparse.py']
 }
