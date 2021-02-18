@@ -1,9 +1,10 @@
 IF UNAME_SYSNAME == 'Windows':
-    ctypedef int socklen_t
-    cdef socklen_t INET_ADDRSTRLEN, INET6_ADDRSTRLEN
-    cdef int AF_INET, AF_INET6
-    cdef int inet_pton(int, char*, void*)
-    cdef char *inet_ntop(int, void*, char*, socklen_t)
+    cdef extern from '<ws2tcpip.h>':
+        ctypedef int socklen_t
+        cdef socklen_t INET_ADDRSTRLEN, INET6_ADDRSTRLEN
+        cdef int AF_INET, AF_INET6
+        cdef int inet_pton(int, char*, void*)
+        cdef char *inet_ntop(int, void*, char*, socklen_t)
 ELSE:
     cdef extern from '<arpa/inet.h>':
         ctypedef int socklen_t
