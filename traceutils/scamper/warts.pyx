@@ -19,7 +19,7 @@ cdef class WartsTrace(Trace):
             self, str type='', str version='', userid=-1, str method='', str src='', str dst='',
             int icmp_sum=-1, str stop_reason='', int stop_data=-1, dict start=None, int hop_count=-1,
             int attempts=-1, unsigned char hoplimit=0, unsigned char firsthop=1, double wait=-1,
-            int wait_probe=-1, int tos=-1, unsigned short probe_size=0, unsigned char probe_count=0,
+            int wait_probe=-1, int tos=-1, unsigned short probe_size=0, unsigned int probe_count=0,
             list hops=None, str list_name='', int id=-1, str hostname='', long start_time=0,
             int dport=0, int sport=0, str rtr=None, str jdata=None
     ):
@@ -136,7 +136,7 @@ cdef class WartsPingResponse:
     def __init__(
             self, str src=None, int seq=-1, int reply_size=-1, int reply_ttl=-1, str reply_proto=None, dict tx=None, dict rx=None,
             double rtt=-1, int probe_ipid=-1, int reply_ipid=-1, int icmp_type=-1, int icmp_code=-1, int family=0,
-            list tsandaddr = None
+            list tsandaddr = None, RR=None
     ):
         self.src = src
         self.seq = seq
@@ -152,6 +152,7 @@ cdef class WartsPingResponse:
         self.icmp_code = icmp_code
         self.family = family
         self.tsandaddr = tsandaddr
+        self.RR = RR
         self.type = gettype(family, icmp_type, icmp_code)
 
     def __repr__(self):

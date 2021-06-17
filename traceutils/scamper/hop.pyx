@@ -70,6 +70,10 @@ cdef class Trace:
         self.family = 0
         self.jdata = None
 
+    def __iter__(self):
+        for h in self.hops:
+            yield h
+
     def __repr__(self):
         return '\n'.join(repr(hop) for hop in self.hops)
 

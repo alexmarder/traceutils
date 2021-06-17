@@ -86,7 +86,11 @@ class PeeringDB(AbstractPeeringDB):
             j = self.load_sqlite()
         self.ixs = {ix['id']: IX(**ix) for ix in j['ix']['data']}
         self.ixlans = {ixlan['id']: IXLAN(self.ixs[ixlan['ix_id']], **ixlan) for ixlan in j['ixlan']['data']}
-        self.ixpfxs = {ixpfx['id']: IXPFX(self.ixlans[ixpfx['ixlan_id']], **ixpfx) for ixpfx in j['ixpfx']['data'] if ixpfx['ixlan_id'] in self.ixlans}
+        # self.ixpfxs = {ixpfx['id']: IXPFX(self.ixlans[ixpfx['ixlan_id']], **ixpfx) for ixpfx in j['ixpfx']['data'] if ixpfx['ixlan_id'] in self.ixlans}
+        self.ixpfxs = {}
+        for ixpfx in j['ixpfx']['data']:
+            if ixpfx['ixlan_id'] in self.ixlans:
+                self.ixpfxs[ixpfx['id']] = IXPFX(self.ixlans[ixpfx['ixlan_id']], **ixpfx)
         self.netixlans = {netixlan['id']: NetIXLAN(self.ixlans[netixlan['ixlan_id']], **netixlan) for netixlan in j['netixlan']['data']}
         self.prefixes = {ixpfx.prefix: ixpfx.ixlan.ix.id for ixpfx in self.ixpfxs.values()}
         self.new_prefixes = {}

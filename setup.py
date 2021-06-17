@@ -5,6 +5,8 @@ from setuptools import setup, find_packages
 from setuptools.extension import Extension
 # from Cython.Build import cythonize
 
+exec(open('traceutils/version.py').read())
+
 if 'build_ext' in sys.argv:
     from Cython.Distutils import build_ext
     use_cython = True
@@ -32,6 +34,7 @@ extensions_names = {
     'traceutils.scamper.hop': ['traceutils/scamper/hop' + ext_pyx],
     'traceutils.scamper.atlas': ['traceutils/scamper/atlas' + ext_pyx],
     'traceutils.scamper.warts': ['traceutils/scamper/warts' + ext_pyx],
+    'traceutils.scamper.utils': ['traceutils/scamper/utils' + ext_pyx],
     # 'traceutils.scamper.pyatlas': ['traceutils/scamper/py_atlas' + ext_py],
     'traceutils.progress.bar': ['traceutils/progress/bar' + ext_py],
     # 'traceutils.traceparse': ['traceparse.py']
@@ -50,7 +53,7 @@ if use_cython:
 
 setup(
     name="traceutils",
-    version='6.16.8',
+    version=__version__,
     author='Alex Marder',
     description="Various packages for traceroute and BGP dump analysis.",
     url="https://github.com/alexmarder/traceutils",
