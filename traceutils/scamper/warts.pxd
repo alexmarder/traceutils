@@ -28,7 +28,7 @@ cdef class WartsTrace(Trace):
         public int wait_probe
         public int tos
         public unsigned char probe_size
-        public unsigned char probe_count
+        public unsigned int probe_count
         public int dport
         public int sport
         public str rtr
@@ -59,6 +59,7 @@ cdef class WartsPingResponse:
         public int family
         public ICMPType type
         public list tsandaddr
+        public list RR
 
 cdef class WartsReader(Reader):
     cdef:

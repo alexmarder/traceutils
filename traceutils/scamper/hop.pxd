@@ -2,6 +2,12 @@ from traceutils.radix.ip2as cimport IP2AS
 cdef extern from '<arpa/inet.h>':
     cdef int AF_INET, AF_INET6
 
+cpdef enum TraceFType:
+    none = 0
+    warts = 1
+    wartsjson = 2
+    atlas = 3
+
 cpdef enum ICMPType:
     echo_reply = 1
     dest_unreach = 2
