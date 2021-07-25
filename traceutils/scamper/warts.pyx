@@ -208,6 +208,7 @@ cdef class WartsJsonReader(Reader):
         self.f = None
         self.trace = trace
         self.ping = ping
+        self.hostname = None
 
     def __iter__(self):
         cdef str line, rtype
@@ -225,6 +226,8 @@ cdef class WartsJsonReader(Reader):
             elif rtype == 'ping':
                 if self.ping:
                     yield WartsPing(**j)
+            elif rtype == 'cycle-start':
+                self.hostname = j['hostname']
 
     def json(self):
         for line in self.f:

@@ -68,6 +68,13 @@ setup(
     #     },
     #     annotate=True
     # ),
+    entry_points={
+        'console_scripts': [
+            'tu-addrs=traceutils.scripts.tu_addrs:main',
+            'tu-adjs=traceutils.scripts.tu_adjs:main',
+            'tu-pydig=traceutils.scripts.tu_pydig:main'
+        ],
+    },
     ext_modules=extensions,
     zip_safe=False,
     package_data=package_data,
