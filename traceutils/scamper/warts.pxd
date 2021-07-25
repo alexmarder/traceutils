@@ -65,6 +65,7 @@ cdef class WartsReader(Reader):
     cdef:
         bint trace
         bint ping
+        str hostname
 
     cpdef void open(self) except *;
     cpdef void close(self) except *;

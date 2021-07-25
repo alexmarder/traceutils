@@ -1,5 +1,6 @@
 cimport cython
 from libc.string cimport strchr
+from libc.string cimport memcpy
 # from libc.math cimport pow
 
 @cython.initializedcheck(False)
@@ -181,3 +182,42 @@ cpdef str otherside(str addr, int num):
 
 cpdef bint valid(long asn) except -1:
     return asn != 23456 and 0 < asn < 64496 or 131071 < asn < 400000
+
+@cython.cdivision(True)
+@cython.initializedcheck(False)
+cdef void fix4_bytes(bytes a, unsigned char masklen, unsigned char *c) except *:
+    cdef unsigned char i, quotient, remainder, mask
+    # memcpy(c, <char *>a, 4)
+    memcpy(c, <char *> a, 4)
+    quotient = masklen / 8
+    remainder = masklen % 8
+    # inet_pton(AF_INET, a, c)
+    for i in range(quotient+1, 4, 1):
+        c[i] = 0
+    # if remainder < 8:
+    mask = ((~0) << (8 - remainder))
+    c[quotient] &= mask
+
+
+@cython.cdivision(True)
+@cython.initializedcheck(False)
+cdef void fix6_bytes(bytes a, unsigned char masklen, unsigned char *c) except *:
+    cdef unsigned char i, quotient, remainder, mask
+    memcpy(c, <char *>a, 16)
+    quotient = masklen / 8
+    remainder = masklen % 8
+    # inet_pton(AF_INET6, a, c)
+    for i in range(quotient+1, 16, 1):
+        c[i] = 0
+    # if remainder > 0:
+    mask = ((~0) << (8 - remainder))
+    c[quotient] &= mask
+
+
+cpdef bytes inet_fix_bytes(unsigned char family, bytes a, unsigned char masklen):
+    cdef unsigned char c[16]
+    if family == AF_INET:
+        fix4_bytes(a, masklen, c)
+        return <bytes>c[:4]
+    fix6_bytes(a, masklen, c)
+    return <bytes>c[:16]

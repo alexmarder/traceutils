@@ -31,3 +31,6 @@ cdef bytes otherside4(bytes addr, int num);
 cdef bytes otherside6(bytes addr, int num);
 cpdef str otherside(str addr, int num);
 cpdef bint valid(long asn) except -1;
+cdef void fix4_bytes(bytes a, unsigned char masklen, unsigned char *c) except *;
+cdef void fix6_bytes(bytes a, unsigned char masklen, unsigned char *c) except *;
+cpdef bytes inet_fix_bytes(unsigned char family, bytes a, unsigned char masklen);
