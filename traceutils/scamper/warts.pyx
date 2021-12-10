@@ -158,51 +158,7 @@ cdef class WartsPingResponse:
     def __repr__(self):
         return 'RTT={rtt}'.format(rtt=self.rtt)
 
-
-cdef class WartsReader(Reader):
-    def __init__(self, str filename, bint trace=True, bint ping=True):
-        self.filename = filename
-        self.p = None
-        self.trace = trace
-        self.ping = ping
-
-    def __iter__(self):
-        cdef str line, rtype
-        cdef dict j
-        for line in self.p.stdout:
-            j = json.loads(line)
-            rtype = j['type']
-            if rtype == 'trace':
-                if self.trace:
-                    yield WartsTrace(jdata=line, **j)
-            elif rtype == 'ping':
-                if self.ping:
-                    yield WartsPing(**j)
-
-    def json(self):
-        for line in self.p.stdout:
-            j = json.loads(line)
-            yield j
-
-    def raw(self):
-        return self.p.stdout
-
-    cpdef void open(self) except *:
-        cdef str cmd
-        if self.filename.endswith('.bz2') or self.filename.endswith('.bzip2'):
-            cmd = 'bzip2 -d -c {} | sc_warts2json'
-        elif self.filename.endswith('.gz'):
-            cmd = 'gzip -d -c {} | sc_warts2json'
-        else:
-            cmd = 'sc_warts2json {}'
-        self.p = Popen(cmd.format(self.filename), stdout=PIPE, shell=True, universal_newlines=True)
-
-    cpdef void close(self) except *:
-        self.p.stdout.close()
-        self.p.wait()
-        self.p = None
-
-cdef class WartsJsonReader(Reader):
+cdef class AbstractWartsReader(Reader):
     def __init__(self, str filename, bint trace=True, bint ping=True):
         self.filename = filename
         self.f = None
@@ -218,25 +174,51 @@ cdef class WartsJsonReader(Reader):
             rtype = j['type']
             if rtype == 'trace':
                 if self.trace:
-                    try:
-                        yield WartsTrace(jdata=line, **j)
-                    except:
-                        print(line)
-                        raise
+                    yield WartsTrace(jdata=line, **j)
             elif rtype == 'ping':
                 if self.ping:
                     yield WartsPing(**j)
-            elif rtype == 'cycle-start':
-                self.hostname = j['hostname']
 
     def json(self):
         for line in self.f:
             j = json.loads(line)
             yield j
 
+    cdef void set_hostname(self) except *:
+        for line in self.f:
+            break
+        j = json.loads(line)
+        if j['type'] == 'cycle-start':
+            self.hostname = j['hostname']
+        else:
+            self.f.seek(0)
+
     def raw(self):
         return self.f
 
+cdef class WartsReader(AbstractWartsReader):
+    def __init__(self, str filename, bint trace=True, bint ping=True):
+        super().__init__(filename, trace=trace, ping=ping)
+        self.p = None
+
+    cpdef void open(self) except *:
+        cdef str cmd
+        if self.filename.endswith('.bz2') or self.filename.endswith('.bzip2'):
+            cmd = 'bzip2 -d -c {} | sc_warts2json'
+        elif self.filename.endswith('.gz'):
+            cmd = 'gzip -d -c {} | sc_warts2json'
+        else:
+            cmd = 'sc_warts2json {}'
+        self.p = Popen(cmd.format(self.filename), stdout=PIPE, shell=True, universal_newlines=True)
+        self.f = self.p.stdout
+        self.set_hostname()
+
+    cpdef void close(self) except *:
+        self.f.close()
+        self.p.wait()
+        self.p = None
+
+cdef class WartsJsonReader(AbstractWartsReader):
     cpdef void open(self) except *:
         cdef str cmd
         if self.filename.endswith('.bz2') or self.filename.endswith('.bzip2'):
@@ -245,6 +227,109 @@ cdef class WartsJsonReader(Reader):
             self.f = gzip.open(self.filename, 'rt')
         else:
             self.f = open(self.filename, 'rt')
+        self.set_hostname()
 
     cpdef void close(self) except *:
         self.f.close()
+
+# cdef class WartsReader(Reader):
+#     def __init__(self, str filename, bint trace=True, bint ping=True):
+#         self.filename = filename
+#         self.p = None
+#         self.trace = trace
+#         self.ping = ping
+#         self.hostname = None
+#         self.f = None
+#
+#     def __iter__(self):
+#         cdef str line, rtype
+#         cdef dict j
+#         for line in self.p.stdout:
+#             j = json.loads(line)
+#             rtype = j['type']
+#             if rtype == 'trace':
+#                 if self.trace:
+#                     yield WartsTrace(jdata=line, **j)
+#             elif rtype == 'ping':
+#                 if self.ping:
+#                     yield WartsPing(**j)
+#
+#     def json(self):
+#         for line in self.p.stdout:
+#             j = json.loads(line)
+#             yield j
+#
+#     def raw(self):
+#         return self.p.stdout
+#
+#     cpdef void open(self) except *:
+#         cdef str cmd
+#         if self.filename.endswith('.bz2') or self.filename.endswith('.bzip2'):
+#             cmd = 'bzip2 -d -c {} | sc_warts2json'
+#         elif self.filename.endswith('.gz'):
+#             cmd = 'gzip -d -c {} | sc_warts2json'
+#         else:
+#             cmd = 'sc_warts2json {}'
+#         self.p = Popen(cmd.format(self.filename), stdout=PIPE, shell=True, universal_newlines=True)
+#         for line in self.f:
+#             break
+#         j = json.loads(line)
+#         if j['type'] == 'cycle-start':
+#             self.hostname = j['hostname']
+#
+#     cpdef void close(self) except *:
+#         self.p.stdout.close()
+#         self.p.wait()
+#         self.p = None
+#
+# cdef class WartsJsonReader(Reader):
+#     def __init__(self, str filename, bint trace=True, bint ping=True):
+#         self.filename = filename
+#         self.f = None
+#         self.trace = trace
+#         self.ping = ping
+#         self.hostname = None
+#
+#     def __iter__(self):
+#         cdef str line, rtype
+#         cdef dict j
+#         for line in self.f:
+#             j = json.loads(line)
+#             rtype = j['type']
+#             if rtype == 'trace':
+#                 if self.trace:
+#                     try:
+#                         yield WartsTrace(jdata=line, **j)
+#                     except:
+#                         print(line)
+#                         raise
+#             elif rtype == 'ping':
+#                 if self.ping:
+#                     yield WartsPing(**j)
+#
+#     def json(self):
+#         for line in self.f:
+#             j = json.loads(line)
+#             yield j
+#
+#     def raw(self):
+#         return self.f
+#
+#     cpdef void open(self) except *:
+#         cdef str cmd
+#         if self.filename.endswith('.bz2') or self.filename.endswith('.bzip2'):
+#             self.f = bz2.open(self.filename, 'rt')
+#         elif self.filename.endswith('.gz'):
+#             self.f = gzip.open(self.filename, 'rt')
+#         else:
+#             self.f = open(self.filename, 'rt')
+#         for line in self.f:
+#             break
+#         j = json.loads(line)
+#         if j['type'] == 'cycle-start':
+#             self.hostname = j['hostname']
+#         else:
+#             self.f.seek(0)
+#
+#     cpdef void close(self) except *:
+#         self.f.close()
