@@ -3,7 +3,7 @@ from socket import AF_INET6
 from socket import AF_INET
 from typing import List, Any, Dict
 
-from jsonschema import validate
+# from jsonschema import validate
 from traceutils.scamper.hop import Hop, Trace, Reader
 
 from traceutils.file2.file2 import File2

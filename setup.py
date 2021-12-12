@@ -35,7 +35,7 @@ extensions_names = {
     'traceutils.scamper.atlas': ['traceutils/scamper/atlas' + ext_pyx],
     'traceutils.scamper.warts': ['traceutils/scamper/warts' + ext_pyx],
     'traceutils.scamper.utils': ['traceutils/scamper/utils' + ext_pyx],
-    # 'traceutils.scamper.pyatlas': ['traceutils/scamper/py_atlas' + ext_py],
+    'traceutils.scamper.pyatlas': ['traceutils/scamper/py_atlas' + ext_py],
     'traceutils.progress.bar': ['traceutils/progress/bar' + ext_py],
     # 'traceutils.traceparse': ['traceparse.py']
 }
@@ -58,7 +58,7 @@ setup(
     description="Various packages for traceroute and BGP dump analysis.",
     url="https://github.com/alexmarder/traceutils",
     packages=find_packages(),
-    install_requires=['ujson', 'orjson', 'cython'],
+    install_requires=['ujson', 'orjson', 'cython', 'jsonschema'],
     # cmdclass={'build_ext': build_ext},
     # ext_modules=cythonize(
     #     extensions,

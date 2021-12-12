@@ -67,6 +67,8 @@ cdef class AbstractWartsReader(Reader):
         bint ping
         public str hostname
         f
+        public dict firstline
+        bint safe
 
     cdef void set_hostname(self) except *;
 
