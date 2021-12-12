@@ -159,17 +159,41 @@ cdef class WartsPingResponse:
         return 'RTT={rtt}'.format(rtt=self.rtt)
 
 cdef class AbstractWartsReader(Reader):
-    def __init__(self, str filename, bint trace=True, bint ping=True):
+    def __init__(self, str filename, bint trace=True, bint ping=True, bint safe=True):
         self.filename = filename
         self.f = None
         self.trace = trace
         self.ping = ping
         self.hostname = None
+        self.firstline = None
+        self.safe = safe
+
+    def safe_iter(self):
+        cdef:
+            str line
+        if not self.safe:
+            return self.f
+        fiter = iter(self.f)
+        while True:
+            try:
+                line = next(fiter)
+                yield line
+            except StopIteration:
+                break
+            except EOFError as e:
+                print(e, self.filename)
 
     def __iter__(self):
-        cdef str line, rtype
-        cdef dict j
-        for line in self.f:
+        cdef:
+            str line, rtype
+            dict j
+        if self.firstline is not None:
+            rtype = self.firstline['type']
+            if rtype == 'trace' and self.trace:
+                yield WartsTrace(jdata=str(self.firstline), **self.firstline)
+            elif rtype == 'ping' and self.ping:
+                yield WartsPing(**self.firstline)
+        for line in self.safe_iter():
             j = json.loads(line)
             rtype = j['type']
             if rtype == 'trace':
@@ -180,24 +204,35 @@ cdef class AbstractWartsReader(Reader):
                     yield WartsPing(**j)
 
     def json(self):
-        for line in self.f:
+        cdef:
+            str line
+        if self.firstline is not None:
+            yield self.firstline
+        for line in self.safe_iter():
             j = json.loads(line)
             yield j
 
     cdef void set_hostname(self) except *:
+        cdef:
+            str line
+            dict j
         for line in self.f:
+            # print(line)
+            j = json.loads(line)
+            if j['type'] == 'cycle-start':
+                self.hostname = j['hostname']
+            else:
+                self.firstline = j
+                # print(self.firstline)
             break
-        j = json.loads(line)
-        if j['type'] == 'cycle-start':
-            self.hostname = j['hostname']
-        else:
-            self.f.seek(0)
 
     def raw(self):
-        return self.f
+        if self.firstline is not None:
+            yield self.firstline
+        yield from self.safe_iter()
 
 cdef class WartsReader(AbstractWartsReader):
-    def __init__(self, str filename, bint trace=True, bint ping=True):
+    def __init__(self, str filename, bint trace=True, bint ping=True, bint safe=True):
         super().__init__(filename, trace=trace, ping=ping)
         self.p = None
 

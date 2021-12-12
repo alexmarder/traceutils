@@ -12,7 +12,7 @@ from traceutils.radix.ip2as import IP2AS, create_table, create_private
 from traceutils.scamper.atlas import AtlasReader
 from traceutils.scamper.hop import ICMPType, Hop
 from traceutils.scamper.warts import WartsReader, WartsJsonReader
-from traceutils.scamper.pyatlas import AtlasReader as AtlasOddReader
+# from traceutils.scamper.pyatlas import AtlasReader as AtlasOddReader
 from traceutils.utils.net import otherside, prefix_addrs
 
 _ip2as: Optional[IP2AS] = None
