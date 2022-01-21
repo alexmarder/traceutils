@@ -37,16 +37,22 @@ cdef class AS2Org:
                     self.asn_names[asn] = aut_name
         for asn, org_id in self.orgs.items():
             self.asn_org_names[asn] = org_names[org_id]
+        self.set_siblings()
         if additional:
             with File2(additional) as f:
                 for line in f:
                     if line.strip():
                         if not line.startswith('#'):
-                            splits = list(map(int, line.split()))
-                            asn = splits[0]
-                            for other in splits[1:]:
+                            asn, *splits = list(map(int, line.split()))
+                            newsibs = set(splits)
+                            newsibs -= self.siblings[asn]
+                            newsibs = {s for sib in newsibs for s in self.siblings[sib]}
+                            for other in newsibs:
                                 self.orgs[other] = self.orgs[asn]
                                 self.asn_org_names[other] = self.asn_org_names[asn]
+            self.set_siblings()
+
+    def set_siblings(self):
         siblings = {}
         for k in set(self.orgs.values()):
             siblings[k] = set()

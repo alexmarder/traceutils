@@ -3,6 +3,7 @@ import gzip
 import orjson as json
 from subprocess import Popen, PIPE
 
+from file2 import fopen2, fopen
 from traceutils.scamper.hop cimport Hop, Trace, Reader, gettype
 from traceutils.utils.net cimport find_family
 
@@ -159,14 +160,16 @@ cdef class WartsPingResponse:
         return 'RTT={rtt}'.format(rtt=self.rtt)
 
 cdef class AbstractWartsReader(Reader):
-    def __init__(self, str filename, bint trace=True, bint ping=True, bint safe=True):
+    def __init__(self, str filename, bint trace=True, bint ping=True, bint safe=True, bint parallel_read=False):
         self.filename = filename
         self.f = None
         self.trace = trace
         self.ping = ping
         self.hostname = None
+        self.addr = None
         self.firstline = None
         self.safe = safe
+        self.parallel_read = parallel_read
 
     def safe_iter(self):
         cdef:
@@ -221,6 +224,7 @@ cdef class AbstractWartsReader(Reader):
             j = json.loads(line)
             if j['type'] == 'cycle-start':
                 self.hostname = j['hostname']
+                self.addr = j.get('addr', None)
             else:
                 self.firstline = j
                 # print(self.firstline)
@@ -256,16 +260,28 @@ cdef class WartsReader(AbstractWartsReader):
 cdef class WartsJsonReader(AbstractWartsReader):
     cpdef void open(self) except *:
         cdef str cmd
-        if self.filename.endswith('.bz2') or self.filename.endswith('.bzip2'):
-            self.f = bz2.open(self.filename, 'rt')
-        elif self.filename.endswith('.gz'):
-            self.f = gzip.open(self.filename, 'rt')
+        if self.parallel_read:
+            self.f = fopen2(self.filename, 'rt')
         else:
-            self.f = open(self.filename, 'rt')
+            self.f = fopen2(self.filename, 'rt', processes=1)
         self.set_hostname()
 
     cpdef void close(self) except *:
         self.f.close()
+
+# cdef class WartsJsonReader(AbstractWartsReader):
+#     cpdef void open(self) except *:
+#         cdef str cmd
+#         if self.filename.endswith('.bz2') or self.filename.endswith('.bzip2'):
+#             self.f = bz2.open(self.filename, 'rt')
+#         elif self.filename.endswith('.gz'):
+#             self.f = gzip.open(self.filename, 'rt')
+#         else:
+#             self.f = open(self.filename, 'rt')
+#         self.set_hostname()
+#
+#     cpdef void close(self) except *:
+#         self.f.close()
 
 # cdef class WartsReader(Reader):
 #     def __init__(self, str filename, bint trace=True, bint ping=True):

@@ -6,7 +6,7 @@ from enum import Enum
 from multiprocessing.pool import Pool
 from typing import Optional, List, Dict, Iterable
 
-from file2 import fopen
+from file2 import fopen2, fopen
 from pb_amarder.bar import Progress
 from traceutils.radix.ip2as import IP2AS, create_table, create_private
 from traceutils.scamper.atlas import AtlasReader
@@ -21,6 +21,7 @@ _filemap4: Optional[Dict[str, str]] = None
 _filemap6: Optional[Dict[str, str]] = None
 _prune_private = True
 _ignore_zero = False
+_paralle_read = False
 
 class OutputType(Enum):
     WARTS = 1
@@ -37,7 +38,7 @@ class TraceFile:
     def __repr__(self):
         return self.filename
 
-def parse_all(traces: Iterable[Trace], prune_private=None, ip2as=None, ignore_zero=None):
+def parse_all(traces: Iterable[Trace], prune_private=None, ip2as=None, ignore_zero=None, global_addr=None):
     if ip2as is None:
         ip2as = _ip2as
     if ip2as is None:
@@ -54,7 +55,7 @@ def parse_all(traces: Iterable[Trace], prune_private=None, ip2as=None, ignore_ze
         trace.prune_loops(True)
         # if trace.loop:
         #     results.cycles.update(trace.loop)
-        hops: List[Hop] = [h for h in trace.hops if ip2as[h.addr] != -1 and h.addr != trace.src]
+        hops: List[Hop] = [h for h in trace.hops if ip2as[h.addr] != -1 and h.addr != trace.src and h.addr != global_addr]
         if not hops: continue
         fhop: Hop = hops[0]
         lhop: Hop = hops[-1]
@@ -87,14 +88,14 @@ def parse(tfile: TraceFile):
     # elif tfile.type == OutputType.ATLAS_ODD:
     #     f = AtlasOddReader(tfile.filename)
     elif tfile.type == OutputType.JSONWARTS:
-        f = WartsJsonReader(tfile.filename)
+        f = WartsJsonReader(tfile.filename, parallel_read=_paralle_read)
     elif tfile.type == OutputType.INFER:
         f = reader(tfile.filename)
     else:
         raise Exception('Invalid output type: {}.'.format(tfile.type))
     try:
         f.open()
-        results = parse_all(f)
+        results = parse_all(f, global_addr=f.addr)
     finally:
         f.close()
     return results
@@ -116,11 +117,12 @@ def parse_parallel(files, poolsize):
             results.update(newresults)
     return results
 
-def run(files, ip2as: IP2AS, poolsize, output=None, prune_private=True, serialize=False, ignore_zero=False):
-    global _ip2as, _filemap4, _filemap6, _prune_private, _ignore_zero
+def run(files, ip2as: IP2AS, poolsize, output=None, prune_private=True, serialize=False, ignore_zero=False, parallel_read=False):
+    global _ip2as, _filemap4, _filemap6, _prune_private, _ignore_zero, _paralle_read
     _ip2as = ip2as
     _prune_private = prune_private
     _ignore_zero = ignore_zero
+    _paralle_read = parallel_read
 
     poolsize = min(len(files), poolsize)
     print(poolsize)
@@ -139,7 +141,7 @@ def run(files, ip2as: IP2AS, poolsize, output=None, prune_private=True, serializ
             with open(output, 'wb') as f:
                 pickle.dump(adjs, f)
         else:
-            with fopen(output, 'wt') as f:
+            with fopen2(output, 'wt') as f:
                 for x, y, z in adjs:
                     f.write('{}\t{}\t{}\n'.format(x, y, int(z)))
     return results
@@ -159,6 +161,7 @@ def main():
     parser.add_argument('-k', '--keep-private', action='store_true')
     parser.add_argument('-P', '--pickle', action='store_true')
     parser.add_argument('-z', '--ignore-zero', action='store_true')
+    parser.add_argument('-R', '--read-parallel', action='store_true')
     args = parser.parse_args()
     files = []
     if args.wfiles:
@@ -183,7 +186,7 @@ def main():
         files.extend(TraceFile(file, OutputType.INFER) for file in args.infer_files)
     ip2as = create_private()
     prune_private = not args.keep_private
-    run(files, ip2as, args.poolsize, args.output, prune_private=prune_private, serialize=args.pickle, ignore_zero=args.ignore_zero)
+    run(files, ip2as, args.poolsize, args.output, prune_private=prune_private, serialize=args.pickle, ignore_zero=args.ignore_zero, parallel_read=args.read_parallel)
 
 if __name__ == '__main__':
     main()

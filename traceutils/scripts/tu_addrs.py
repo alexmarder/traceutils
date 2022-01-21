@@ -23,6 +23,7 @@ _noechos = False
 _subnet = False
 _include_dsts = False
 _fours = False
+_paralle_read = False
 
 class OutputType(Enum):
     WARTS = 1
@@ -44,10 +45,10 @@ def parse(tfile: TraceFile):
         f = WartsReader(tfile.filename, ping=False)
     elif tfile.type == OutputType.ATLAS:
         f = AtlasReader(tfile.filename)
-    elif tfile.type == OutputType.ATLAS_ODD:
-        f = AtlasOddReader(tfile.filename)
+    # elif tfile.type == OutputType.ATLAS_ODD:
+    #     f = AtlasOddReader(tfile.filename)
     elif tfile.type == OutputType.JSONWARTS:
-        f = WartsJsonReader(tfile.filename)
+        f = WartsJsonReader(tfile.filename, parallel_read=_paralle_read)
     else:
         raise Exception('Invalid output type: {}.'.format(tfile.type))
     try:
@@ -104,14 +105,15 @@ def parse_parallel(files, poolsize):
             results.update(newresults)
     return results
 
-def run(files, ip2as: IP2AS, poolsize, output=None, prune_loops=False, noechos=False, subnet=False, include_dsts=False, fours=False):
-    global _ip2as, _prune_loops, _noechos, _subnet, _include_dsts, _fours
+def run(files, ip2as: IP2AS, poolsize, output=None, prune_loops=False, noechos=False, subnet=False, include_dsts=False, fours=False, parallel_read=False):
+    global _ip2as, _prune_loops, _noechos, _subnet, _include_dsts, _fours, _paralle_read
     _ip2as = ip2as
     _prune_loops = prune_loops
     _noechos = noechos
     _subnet = subnet
     _include_dsts = include_dsts
     _fours = fours
+    _paralle_read = parallel_read
 
     poolsize = min(len(files), poolsize)
     print(poolsize)
@@ -134,6 +136,7 @@ def main():
     parser.add_argument('-l', '--prune-loops', action='store_true')
     parser.add_argument('-e', '--noechos', action='store_true')
     parser.add_argument('-d', '--include-dsts', action='store_true')
+    parser.add_argument('-R', '--read-parallel', action='store_true')
     group = parser.add_mutually_exclusive_group()
     group.add_argument('-s', '--subnet', action='store_true')
     group.add_argument('-4', '--fours', action='store_true')
