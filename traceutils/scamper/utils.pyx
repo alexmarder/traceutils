@@ -2,7 +2,7 @@ from traceutils.scamper.warts cimport WartsReader, WartsJsonReader
 
 from traceutils.scamper.atlas cimport AtlasReader
 
-cpdef Reader reader(str filename, TraceFType ftype=TraceFType.none, bint safe=True):
+cpdef Reader reader(str filename, TraceFType ftype=TraceFType.none, bint safe=True, bint parallel_read=False):
     if ftype == TraceFType.none:
         if filename.endswith('warts') or filename.endswith('warts.gz') or filename.endswith('warts.bz2'):
             return WartsReader(filename, safe=safe)
@@ -11,7 +11,7 @@ cpdef Reader reader(str filename, TraceFType ftype=TraceFType.none, bint safe=Tr
     if ftype == TraceFType.warts:
         return WartsReader(filename, safe=safe)
     elif ftype == TraceFType.wartsjson:
-        return WartsJsonReader(filename, safe=safe)
+        return WartsJsonReader(filename, safe=safe, parallel_read=parallel_read)
     elif ftype == TraceFType.atlas:
         return AtlasReader(filename)
     else:

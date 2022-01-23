@@ -55,7 +55,10 @@ def parse_all(traces: Iterable[Trace], prune_private=None, ip2as=None, ignore_ze
         trace.prune_loops(True)
         # if trace.loop:
         #     results.cycles.update(trace.loop)
-        hops: List[Hop] = [h for h in trace.hops if ip2as[h.addr] != -1 and h.addr != trace.src and h.addr != global_addr]
+        hops: List[Hop] = trace.hops
+        if prune_private:
+            hops: List[Hop] = [h for h in hops if ip2as[h.addr] != -1]
+        hops: List[Hop] = [h for h in hops if h.addr != trace.src and h.addr != global_addr]
         if not hops: continue
         fhop: Hop = hops[0]
         lhop: Hop = hops[-1]

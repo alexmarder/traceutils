@@ -236,8 +236,8 @@ cdef class AbstractWartsReader(Reader):
         yield from self.safe_iter()
 
 cdef class WartsReader(AbstractWartsReader):
-    def __init__(self, str filename, bint trace=True, bint ping=True, bint safe=True):
-        super().__init__(filename, trace=trace, ping=ping)
+    def __init__(self, str filename, bint trace=True, bint ping=True, bint safe=True, bint parallel_read=False):
+        super().__init__(filename, trace=trace, ping=ping, parallel_read=parallel_read)
         self.p = None
 
     cpdef void open(self) except *:
